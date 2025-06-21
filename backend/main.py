@@ -10,10 +10,14 @@ from typing import Optional, List
 import os
 from dotenv import load_dotenv
 import io
+from fastapi import Path
 
 from database import Database, get_db
 from models import *
-from schemas import *
+from schemas import (
+    StatusUpdate, TributeResponse, AuthResponse, AdminLoginRequest, AdminUserResponse, DashboardResponse,
+    CondolenceResponse, SubmissionResponse, CondolenceSubmission, AccreditationResponse
+)
 from pdf_generator import pdf_generator
 from obituary_generator import obituary_generator
 
@@ -266,6 +270,121 @@ async def submit_condolence(condolence: CondolenceSubmission, db: Database = Dep
         )
     except Exception as e:
         print(f"Submit condolence error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ==================== ACCREDITATIONS ADMIN ENDPOINTS ====================
+
+@app.get("/api/admin/accreditations", response_model=List[AccreditationResponse])
+async def list_accreditations(
+    status: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """List accreditations with optional filters (admin only)"""
+    try:
+        accs = await db.get_accreditations(status=status, category=category, limit=limit, offset=offset)
+        return accs
+    except Exception as e:
+        print(f"List accreditations error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/admin/accreditations/{accreditation_id}/status")
+async def update_accreditation_status(
+    accreditation_id: int = Path(..., description="Accreditation ID"),
+    update: StatusUpdate = None,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """Update accreditation status (approve/reject) (admin only)"""
+    try:
+        await db.update_accreditation_status(
+            accreditation_id=accreditation_id,
+            status=update.status,
+            admin_id=admin.id,
+            notes=update.notes,
+        )
+        return {"success": True, "message": f"Accreditation {accreditation_id} status updated to {update.status}"}
+    except Exception as e:
+        print(f"Update accreditation status error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ==================== CONDOLENCES ADMIN ENDPOINTS ====================
+
+@app.get("/api/admin/condolences", response_model=List[CondolenceResponse])
+async def list_condolences(
+    status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """List condolences with optional filters (admin only)"""
+    try:
+        conds = await db.get_condolences(status=status, limit=limit, offset=offset)
+        return conds
+    except Exception as e:
+        print(f"List condolences error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/admin/condolences/{condolence_id}/status")
+async def update_condolence_status(
+    condolence_id: int = Path(..., description="Condolence ID"),
+    update: StatusUpdate = None,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """Update condolence status (approve/reject) (admin only)"""
+    try:
+        await db.update_condolence_status(
+            condolence_id=condolence_id,
+            status=update.status,
+            admin_id=admin.id,
+            notes=update.notes,
+        )
+        return {"success": True, "message": f"Condolence {condolence_id} status updated to {update.status}"}
+    except Exception as e:
+        print(f"Update condolence status error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+# ==================== TRIBUTES ADMIN ENDPOINTS ====================
+
+@app.get("/api/admin/tributes", response_model=List[TributeResponse])
+async def list_tributes(
+    status: Optional[str] = None,
+    limit: int = 50,
+    offset: int = 0,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """List tributes with optional filters (admin only)"""
+    try:
+        tribs = await db.get_tributes(status=status, limit=limit, offset=offset)
+        return tribs
+    except Exception as e:
+        print(f"List tributes error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.put("/api/admin/tributes/{tribute_id}/status")
+async def update_tribute_status(
+    tribute_id: int = Path(..., description="Tribute ID"),
+    update: StatusUpdate = None,
+    admin: AdminUser = Depends(get_current_admin),
+    db: Database = Depends(get_db),
+):
+    """Update tribute status (approve/reject) (admin only)"""
+    try:
+        await db.update_tribute_status(
+            tribute_id=tribute_id,
+            status=update.status,
+            admin_id=admin.id,
+            notes=update.notes,
+        )
+        return {"success": True, "message": f"Tribute {tribute_id} status updated to {update.status}"}
+    except Exception as e:
+        print(f"Update tribute status error: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, X, Search, ArrowLeft, Download } from "lucide-react"
 import Link from "next/link"
+import apiClient from "@/lib/api"
 
 interface CondolenceMessage {
   id: number
@@ -24,62 +25,56 @@ export default function AdminCondolencesPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [condolences, setCondolences] = useState<CondolenceMessage[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const auth = localStorage.getItem("adminAuth")
     if (auth === "true") {
       setIsAuthenticated(true)
-      // Load sample data
-      setCondolences([
-        {
-          id: 1,
-          name: "Mary Banda",
-          location: "Lusaka",
-          message: "A true leader who served Zambia with dedication. Rest in peace, Your Excellency.",
-          email: "mary.banda@email.com",
-          timestamp: "2025-06-07T10:30:00Z",
-          status: "pending",
-        },
-        {
-          id: 2,
-          name: "John Mwanza",
-          location: "Ndola",
-          message: "Dr. Lungu's legacy will forever inspire future generations of Zambians.",
-          email: "john.mwanza@email.com",
-          timestamp: "2025-06-07T11:15:00Z",
-          status: "approved",
-        },
-        {
-          id: 3,
-          name: "Sarah Phiri",
-          location: "Kitwe",
-          message: "Thank you for your service to our nation. Your memory lives on in our hearts.",
-          email: "sarah.phiri@email.com",
-          timestamp: "2025-06-07T12:00:00Z",
-          status: "approved",
-        },
-        {
-          id: 4,
-          name: "David Tembo",
-          location: "Livingstone",
-          message: "A statesman who believed in democracy and peaceful transitions. Forever remembered.",
-          email: "david.tembo@email.com",
-          timestamp: "2025-06-07T13:45:00Z",
-          status: "pending",
-        },
-      ])
+      setLoading(true)
+      setError(null)
+      apiClient.getCondolences()
+        .then((data: any[]) => {
+          setCondolences(
+            data.map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              location: item.location,
+              message: item.message,
+              email: item.email,
+              timestamp: item.submitted_at,
+              status: item.status,
+            }))
+          )
+          setLoading(false)
+        })
+        .catch((_err: any) => {
+          setError("Failed to load condolences.")
+          setLoading(false)
+        })
     } else {
       router.push("/admin/login")
     }
   }, [router])
 
-  const handleApprove = (id: number) => {
-    setCondolences((prev) => prev.map((item) => (item.id === id ? { ...item, status: "approved" } : item)))
+  const handleApprove = async (id: number) => {
+    try {
+      await apiClient.updateCondolenceStatus(id, "approved")
+      setCondolences((prev) => prev.map((item) => (item.id === id ? { ...item, status: "approved" } : item)))
+    } catch (e) {
+      setError("Failed to approve condolence.")
+    }
   }
 
-  const handleReject = (id: number) => {
-    setCondolences((prev) => prev.map((item) => (item.id === id ? { ...item, status: "rejected" } : item)))
+  const handleReject = async (id: number) => {
+    try {
+      await apiClient.updateCondolenceStatus(id, "rejected")
+      setCondolences((prev) => prev.map((item) => (item.id === id ? { ...item, status: "rejected" } : item)))
+    } catch (e) {
+      setError("Failed to reject condolence.")
+    }
   }
 
   const exportToExcel = () => {
@@ -98,8 +93,11 @@ export default function AdminCondolencesPage() {
   const approvedCount = condolences.filter((item) => item.status === "approved").length
   const rejectedCount = condolences.filter((item) => item.status === "rejected").length
 
-  if (!isAuthenticated) {
-    return <div>Loading...</div>
+  if (loading) {
+    return <div>Loading condolences...</div>
+  }
+  if (error) {
+    return <div className="text-red-600">{error}</div>
   }
 
   const CondolenceCard = ({ condolence }: { condolence: CondolenceMessage }) => (

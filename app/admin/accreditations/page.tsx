@@ -24,6 +24,7 @@ import {
   FileText,
 } from "lucide-react"
 import Link from "next/link"
+import apiClient from "@/lib/api"
 
 interface AccreditationSubmission {
   id: number
@@ -73,165 +74,90 @@ export default function AdminAccreditationsPage() {
   const [accreditations, setAccreditations] = useState<AccreditationSubmission[]>([])
   const [selectedAccreditation, setSelectedAccreditation] = useState<AccreditationSubmission | null>(null)
   const [showDetails, setShowDetails] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
+  // Fetch accreditations from backend
   useEffect(() => {
     const auth = localStorage.getItem("adminAuth")
     if (auth === "true") {
       setIsAuthenticated(true)
-      // Load sample data
-      setAccreditations([
-        {
-          id: 1,
-          firstName: "John",
-          lastName: "Smith",
-          email: "john.smith@bbcnews.com",
-          phone: "+44-20-7946-0958",
-          nationality: "British",
-          idNumber: "AB123456C",
-          dateOfBirth: "1985-03-15",
-          organization: "BBC News",
-          position: "Senior Correspondent",
-          category: "media",
-          accreditationType: "media",
-          address: "Broadcasting House, Portland Place",
-          city: "London",
-          country: "United Kingdom",
-          emergencyContact: "Sarah Smith",
-          emergencyPhone: "+44-20-7946-0959",
-          specialRequirements: "Camera equipment, satellite uplink",
-          vehicleRegistration: "BBC001",
-          timestamp: "2025-06-05T09:30:00Z",
-          status: "pending",
-          ipAddress: "81.149.123.45",
-          documents: ["passport.pdf", "press_card.pdf", "assignment_letter.pdf"],
-        },
-        {
-          id: 2,
-          firstName: "Maria",
-          lastName: "Rodriguez",
-          email: "maria.rodriguez@mfa.gov.es",
-          phone: "+34-91-379-9700",
-          nationality: "Spanish",
-          idNumber: "12345678Z",
-          dateOfBirth: "1978-07-22",
-          organization: "Embassy of Spain",
-          position: "Cultural Attaché",
-          category: "diplomatic",
-          accreditationType: "vip",
-          address: "Calle de Serrano, 116",
-          city: "Madrid",
-          country: "Spain",
-          emergencyContact: "Carlos Rodriguez",
-          emergencyPhone: "+34-91-379-9701",
-          accompaniedBy: "2 embassy staff members",
-          timestamp: "2025-06-04T14:20:00Z",
-          status: "approved",
-          ipAddress: "85.84.123.67",
-          documents: ["diplomatic_passport.pdf", "credentials.pdf"],
-          approvedBy: "Admin User",
-          approvedDate: "2025-06-05T08:00:00Z",
-        },
-        {
-          id: 3,
-          firstName: "David",
-          lastName: "Mwanza",
-          email: "david.mwanza@gov.zm",
-          phone: "+260-211-123-456",
-          nationality: "Zambian",
-          idNumber: "123456/78/9",
-          dateOfBirth: "1970-11-08",
-          organization: "Ministry of Information",
-          position: "Director of Communications",
-          category: "government",
-          accreditationType: "vip",
-          address: "Government Complex",
-          city: "Lusaka",
-          country: "Zambia",
-          emergencyContact: "Grace Mwanza",
-          emergencyPhone: "+260-977-123-456",
-          vehicleRegistration: "GRZ 001A",
-          timestamp: "2025-06-03T11:45:00Z",
-          status: "approved",
-          ipAddress: "41.223.45.89",
-          documents: ["government_id.pdf", "authorization.pdf"],
-          approvedBy: "Admin User",
-          approvedDate: "2025-06-03T12:00:00Z",
-        },
-        {
-          id: 4,
-          firstName: "Rev. Peter",
-          lastName: "Banda",
-          email: "peter.banda@ucz.org.zm",
-          phone: "+260-211-234-567",
-          nationality: "Zambian",
-          idNumber: "234567/89/0",
-          dateOfBirth: "1965-05-12",
-          organization: "United Church of Zambia",
-          position: "Moderator",
-          category: "religious",
-          accreditationType: "vip",
-          address: "Church House, Cairo Road",
-          city: "Lusaka",
-          country: "Zambia",
-          emergencyContact: "Mrs. Mary Banda",
-          emergencyPhone: "+260-966-234-567",
-          accompaniedBy: "Church delegation (5 members)",
-          timestamp: "2025-06-02T16:30:00Z",
-          status: "pending",
-          ipAddress: "41.223.45.90",
-          documents: ["church_credentials.pdf", "delegation_list.pdf"],
-        },
-        {
-          id: 5,
-          firstName: "Chief",
-          lastName: "Mukuni",
-          email: "chief.mukuni@traditional.zm",
-          phone: "+260-213-345-678",
-          nationality: "Zambian",
-          idNumber: "345678/90/1",
-          dateOfBirth: "1955-09-20",
-          organization: "Traditional Authority",
-          position: "Traditional Leader",
-          category: "traditional",
-          accreditationType: "vip",
-          address: "Mukuni Village",
-          city: "Livingstone",
-          country: "Zambia",
-          emergencyContact: "Headman Mukuni",
-          emergencyPhone: "+260-977-345-678",
-          specialRequirements: "Traditional regalia, cultural items",
-          accompaniedBy: "Traditional council (8 members)",
-          timestamp: "2025-06-01T13:15:00Z",
-          status: "approved",
-          ipAddress: "41.223.45.91",
-          documents: ["traditional_credentials.pdf", "council_list.pdf"],
-          approvedBy: "Admin User",
-          approvedDate: "2025-06-01T14:00:00Z",
-        },
-      ])
+      setLoading(true)
+      setError(null)
+      apiClient.getAccreditations()
+        .then((data: any[]) => {
+          setAccreditations(
+            data.map((item: any) => ({
+              id: item.id,
+              firstName: item.first_name,
+              lastName: item.last_name,
+              email: item.email,
+              phone: item.phone,
+              nationality: item.nationality,
+              idNumber: item.id_number,
+              dateOfBirth: item.date_of_birth,
+              organization: item.organization,
+              position: item.position,
+              category: item.category,
+              accreditationType: item.accreditation_type,
+              address: item.address,
+              city: item.city,
+              country: item.country,
+              emergencyContact: item.emergency_contact,
+              emergencyPhone: item.emergency_phone,
+              specialRequirements: item.special_requirements,
+              vehicleRegistration: item.vehicle_registration,
+              accompaniedBy: item.accompanied_by,
+              timestamp: item.submitted_at,
+              status: item.status,
+              ipAddress: item.ip_address,
+              documents: item.documents || [],
+              adminNotes: item.admin_notes,
+              approvedBy: item.reviewed_by_name,
+              approvedDate: item.reviewed_at,
+            }))
+          )
+          setLoading(false)
+        })
+        .catch((_err: any) => {
+          setError("Failed to load accreditations.")
+          setLoading(false)
+        })
     } else {
       router.push("/admin/login")
     }
   }, [router])
 
-  const handleApprove = (id: number) => {
-    setAccreditations((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              status: "approved",
-              approvedBy: "Admin User",
-              approvedDate: new Date().toISOString(),
-            }
-          : item,
-      ),
-    )
+  // Approve accreditation
+  const handleApprove = async (id: number) => {
+    try {
+      await apiClient.updateAccreditationStatus(id, "approved")
+      setAccreditations((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? {
+                ...item,
+                status: "approved",
+                approvedBy: "You",
+                approvedDate: new Date().toISOString(),
+              }
+            : item,
+        ),
+      )
+    } catch (e) {
+      setError("Failed to approve accreditation.")
+    }
   }
 
-  const handleReject = (id: number) => {
-    setAccreditations((prev) => prev.map((item) => (item.id === id ? { ...item, status: "rejected" } : item)))
+  // Reject accreditation
+  const handleReject = async (id: number) => {
+    try {
+      await apiClient.updateAccreditationStatus(id, "rejected")
+      setAccreditations((prev) => prev.map((item) => (item.id === id ? { ...item, status: "rejected" } : item)))
+    } catch (e) {
+      setError("Failed to reject accreditation.")
+    }
   }
 
   const handleViewDetails = (accreditation: AccreditationSubmission) => {
@@ -259,8 +185,11 @@ export default function AdminAccreditationsPage() {
   const approvedCount = accreditations.filter((item) => item.status === "approved").length
   const rejectedCount = accreditations.filter((item) => item.status === "rejected").length
 
-  if (!isAuthenticated) {
-    return <div>Loading...</div>
+  if (loading) {
+    return <div>Loading accreditations...</div>
+  }
+  if (error) {
+    return <div className="text-red-600">{error}</div>
   }
 
   const getCategoryColor = (category: string) => {
