@@ -14,17 +14,16 @@ from models import *
 
 load_dotenv()
 
-# Database configuration
-from models import *
+# MySQL Database configuration
+MYSQL_USER = os.getenv("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "12345")
+MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
+MYSQL_DB = os.getenv("MYSQL_DB", "memorialDB")
 
-load_dotenv()
-
-# Path to your SQLite DB (adjusted for your directory structure)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(BASE_DIR, "memorialDB", "memorialDB.db")
-
-# Construct SQLite connection string
-DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
+DATABASE_URL = (
+    f"mysql+aiomysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+)
 
 # Async engine and sessionmaker
 engine = create_async_engine(DATABASE_URL, echo=True)
@@ -48,7 +47,8 @@ class Database:
                 id=row.id,
                 username=row.username,
                 email=row.email,
-                password_hash=row.password_hash,
+                password_hash=getattr(row, "password_hash", None),
+                password=getattr(row, "password", None),
                 full_name=row.full_name,
                 role=row.role,
                 is_active=row.is_active,
@@ -362,6 +362,12 @@ class Database:
         await self.session.commit()
         return result.lastrowid
 
+    async def count_gallery_images(self) -> int:
+        """Count only image items in the gallery."""
+        result = await self.session.execute(text("SELECT COUNT(*) FROM gallery_items WHERE status = 'active' AND type = 'image'"))
+        row = result.fetchone()
+        return row[0] if row else 0
+
     # ==================== ADMIN LOGS ====================
     
     async def log_admin_action(
@@ -375,10 +381,13 @@ class Database:
         ip_address: Optional[str] = None,
         user_agent: Optional[str] = None
     ):
-        """Log admin action"""
+        """Log admin action
+        NOTE: Ensure a UNIQUE constraint exists on (admin_id, action, entity_type, entity_id) in admin_logs for ON DUPLICATE KEY UPDATE to work in MySQL.
+        """
         query = """
             INSERT INTO admin_logs (admin_id, action, entity_type, entity_id, old_values, new_values, ip_address, user_agent)
             VALUES (:admin_id, :action, :entity_type, :entity_id, :old_values, :new_values, :ip_address, :user_agent)
+            ON DUPLICATE KEY UPDATE action = :action, entity_type = :entity_type, entity_id = :entity_id, old_values = :old_values, new_values = :new_values, ip_address = :ip_address, user_agent = :user_agent
         """
         await self.session.execute(text(query), {
             "admin_id": admin_id,

@@ -286,6 +286,7 @@ export default function MemoriesGalleryPage() {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-500 outline-none"
+                aria-label="Sort memories by"
               >
                 <option value="date">Sort by Date</option>
                 <option value="title">Sort by Title</option>
@@ -297,14 +298,16 @@ export default function MemoriesGalleryPage() {
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`p-2 ${viewMode === "grid" ? "bg-green-500 text-white" : "bg-white text-gray-600"}`}
+                  title="Grid view"
                 >
                   <Grid3X3 className="w-5 h-5" />
-                </button>
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 ${viewMode === "list" ? "bg-green-500 text-white" : "bg-white text-gray-600"}`}
+                  title="List view"
                 >
                   <List className="w-5 h-5" />
+                </button>
                 </button>
               </div>
 
@@ -474,84 +477,81 @@ export default function MemoriesGalleryPage() {
 
       {/* Enhanced Lightbox Modal */}
       {selectedItem && (
-        <Dialog open={!!selectedItem} onOpenChange={() => closeLightbox()}>
-          <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden">
-            <div className="relative">
-              <button
-                onClick={closeLightbox}
-                className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+        <Dialog open={!!selectedItem} onOpenChange={closeLightbox}>
+          <DialogContent className="relative max-w-2xl w-full p-0 overflow-visible">
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+              title="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => navigateLightbox("prev")}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+              title="Previous"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => navigateLightbox("next")}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
+              title="Next"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
 
-              <button
-                onClick={() => navigateLightbox("prev")}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
-              >
-                <ChevronLeft className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={() => navigateLightbox("next")}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-
-              <div className="aspect-video relative bg-black">
-                <Image
-                  src={selectedItem.url || "/placeholder.svg"}
-                  alt={selectedItem.title}
-                  fill
-                  className="object-contain"
-                />
-                {selectedItem.type === "video" && (
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center">
-                      <Play className="w-10 h-10 text-green-700 ml-1" />
-                    </div>
+            <div className="aspect-video relative bg-black">
+              <Image
+                src={selectedItem.url || "/placeholder.svg"}
+                alt={selectedItem.title}
+                fill
+                className="object-contain"
+              />
+              {selectedItem.type === "video" && (
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center">
+                    <Play className="w-10 h-10 text-green-700 ml-1" />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              <div className="p-6 bg-white">
-                <div className="flex items-center gap-3 mb-4">
-                  <Badge variant="outline">{selectedItem.year}</Badge>
-                  <Badge variant="outline">{selectedItem.type}</Badge>
-                  {selectedItem.photographer && <Badge variant="outline">📸 {selectedItem.photographer}</Badge>}
-                </div>
-                <h3 className="text-3xl font-serif font-bold mb-3">{selectedItem.title}</h3>
-                <p className="text-gray-600 mb-4 text-lg">{selectedItem.description}</p>
-                {selectedItem.location && (
-                  <p className="text-gray-500 mb-4 flex items-center">
-                    <Calendar className="w-5 h-5 mr-2" />
-                    {selectedItem.location}
-                  </p>
-                )}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedItem.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-sm">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Share2 className="w-4 h-4" />
-                    Share
-                  </Button>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Download className="w-4 h-4" />
-                    Download
-                  </Button>
-                </div>
+            <div className="p-6 bg-white">
+              <div className="flex items-center gap-3 mb-4">
+                <Badge variant="outline">{selectedItem.year}</Badge>
+                <Badge variant="outline">{selectedItem.type}</Badge>
+                {selectedItem.photographer && <Badge variant="outline">📸 {selectedItem.photographer}</Badge>}
+              </div>
+              <h3 className="text-3xl font-serif font-bold mb-3">{selectedItem.title}</h3>
+              <p className="text-gray-600 mb-4 text-lg">{selectedItem.description}</p>
+              {selectedItem.location && (
+                <p className="text-gray-500 mb-4 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  {selectedItem.location}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {selectedItem.tags.map((tag) => (
+                  <Badge key={tag} variant="outline" className="text-sm">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </Button>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
               </div>
             </div>
           </DialogContent>
         </Dialog>
       )}
-
-      <CondolencesTicker />
     </div>
   )
 }

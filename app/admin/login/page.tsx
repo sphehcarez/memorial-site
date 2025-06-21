@@ -1,14 +1,12 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Shield, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react"
-import { apiClient } from "@/lib/api"
+import apiClient from "@/lib/api"
 
 export default function AdminLoginPage() {
   const [credentials, setCredentials] = useState({
@@ -30,8 +28,9 @@ export default function AdminLoginPage() {
       const response = await apiClient.login(credentials.username, credentials.password)
 
       if (response.success) {
+        localStorage.setItem("adminAuth", "true")
         console.log("Login successful, redirecting...")
-        router.push("/admin")
+        router.push("/admin/dashboard")
       } else {
         setError(response.error || "Login failed")
       }

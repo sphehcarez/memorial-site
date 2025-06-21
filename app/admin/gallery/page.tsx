@@ -265,14 +265,20 @@ export default function AdminGalleryPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Upload File *</label>
+                <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-2">Upload File *</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-600 mb-2">Click to upload or drag and drop</p>
                   <p className="text-sm text-gray-500">
                     {newItem.type === "image" ? "PNG, JPG, GIF up to 10MB" : "MP4, MOV up to 100MB"}
                   </p>
-                  <input type="file" className="hidden" accept={newItem.type === "image" ? "image/*" : "video/*"} />
+                  <input 
+                    id="file-upload"
+                    type="file" 
+                    className="hidden" 
+                    accept={newItem.type === "image" ? "image/*" : "video/*"}
+                    aria-label="Upload file"
+                  />
                 </div>
               </div>
 

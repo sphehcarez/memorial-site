@@ -110,8 +110,14 @@ async def admin_login(credentials: AdminLoginRequest, db: Database = Depends(get
         if not admin:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
-        # Verify password
-        if not bcrypt.checkpw(credentials.password.encode('utf-8'), admin.password_hash.encode('utf-8')):
+        # Support both bcrypt and legacy plain password
+        if admin.password_hash:
+            if not bcrypt.checkpw(credentials.password.encode('utf-8'), admin.password_hash.encode('utf-8')):
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+        elif admin.password:
+            if credentials.password != admin.password:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+        else:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Update last login
@@ -158,26 +164,32 @@ async def admin_login(credentials: AdminLoginRequest, db: Database = Depends(get
 async def get_dashboard_data(admin: AdminUser = Depends(get_current_admin), db: Database = Depends(get_db)):
     """Get dashboard statistics and recent activity"""
     try:
-        # Mock data for demo
-        stats = {
-            "totalCondolences": 1247,
-            "pendingCondolences": 23,
-            "totalTributes": 89,
-            "pendingTributes": 7,
-            "totalAccreditations": 156,
-            "pendingAccreditations": 12,
-            "totalGalleryItems": 234,
-            "totalVisitors": 45678
-        }
-        
+        stats = await db.get_dashboard_stats()
         recent_activity = {
-            "condolences": [],
-            "tributes": [],
-            "accreditations": []
+            "condolences": await db.get_condolences(limit=5),
+            "tributes": await db.get_tributes(limit=5),
+            "accreditations": await db.get_accreditations(limit=5)
         }
-        
+        # Count only images for Gallery Items
+        gallery_image_count = await db.count_gallery_images()
         return DashboardResponse(
-            stats=stats,
+            stats={
+                "condolences": {
+                    "total": stats["condolences"]["total"],
+                    "pending": stats["condolences"]["pending"]
+                },
+                "tributes": {
+                    "total": stats["tributes"]["total"],
+                    "pending": stats["tributes"]["pending"]
+                },
+                "accreditations": {
+                    "total": stats["accreditations"]["total"],
+                    "pending": stats["accreditations"]["pending"]
+                },
+                "gallery": {
+                    "total": gallery_image_count
+                }
+            },
             recentActivity=recent_activity
         )
     except Exception as e:
@@ -236,8 +248,7 @@ async def download_obituary_pdf():
 async def get_public_condolences(limit: int = 50, offset: int = 0, db: Database = Depends(get_db)):
     """Get approved condolences for public display"""
     try:
-        # Mock data for demo
-        condolences = []
+        condolences = await db.get_condolences(status="approved", limit=limit, offset=offset)
         return condolences
     except Exception as e:
         print(f"Condolences error: {e}")
@@ -247,10 +258,10 @@ async def get_public_condolences(limit: int = 50, offset: int = 0, db: Database 
 async def submit_condolence(condolence: CondolenceSubmission, db: Database = Depends(get_db)):
     """Submit a new condolence message"""
     try:
-        # Mock submission
+        new_id = await db.create_condolence(condolence.dict())
         return SubmissionResponse(
             success=True,
-            id=1,
+            id=new_id,
             message="Condolence submitted successfully. It will be reviewed before publication."
         )
     except Exception as e:

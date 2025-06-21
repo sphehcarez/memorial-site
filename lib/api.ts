@@ -39,8 +39,20 @@ class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        console.error(`API Error: ${response.status}`, errorData)
-        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`)
+        if (response.status === 401) {
+          // For 401, return a special object instead of throwing
+          return { success: false, error: errorData.detail || "Invalid credentials" } as any;
+        }
+        if (response.status !== 401 && errorData && Object.keys(errorData).length > 0) {
+          console.error(`API Error: ${response.status}`, errorData)
+        }
+        throw new Error(
+          errorData.detail ||
+          errorData.error ||
+          (response.status === 500
+            ? "Internal server error. Please try again later."
+            : `HTTP error! status: ${response.status}`)
+        )
       }
 
       const data = await response.json()
@@ -66,18 +78,14 @@ class ApiClient {
           localStorage.setItem("adminToken", response.token)
           localStorage.setItem("adminUser", JSON.stringify(response.user))
         }
+        return { success: true, token: response.token, user: response.user }
+      } else {
+        return { success: false, error: response.detail || response.error || "Login failed" }
       }
-
-      return response
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error)
-      throw error
+      return { success: false, error: error.message || "Network error. Please check if the backend server is running." }
     }
-  }
-
-  // Dashboard methods
-  async getDashboardData() {
-    return this.request<any>("/api/admin/dashboard")
   }
 
   // Condolences methods
@@ -221,6 +229,32 @@ class ApiClient {
       console.error("PDF download error:", error)
       throw error
     }
+  }
+
+  // Dashboard method
+  async getDashboardData(): Promise<{
+    stats: any;
+    recentActivity: Array<{
+      id: number;
+      type: string;
+      user: string;
+      action: string;
+      time: string;
+    }>;
+  }> {
+    const data = await this.request<any>("/api/admin/dashboard");
+    // Flatten recentActivity object into a single array with type
+    const recentActivity: any[] = [];
+    if (data.recentActivity) {
+      for (const [type, items] of Object.entries(data.recentActivity)) {
+        if (Array.isArray(items)) {
+          for (const item of items) {
+            recentActivity.push({ ...item, type });
+          }
+        }
+      }
+    }
+    return { ...data, recentActivity };
   }
 }
 

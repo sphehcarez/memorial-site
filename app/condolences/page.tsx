@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -19,6 +17,8 @@ export default function CondolencesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [condolenceMessages, setCondolenceMessages] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [submitStatus, setSubmitStatus] = useState<"" | "success" | "error">("")
+  const [submitMessage, setSubmitMessage] = useState("")
 
   useEffect(() => {
     loadCondolences()
@@ -38,25 +38,32 @@ export default function CondolencesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+    setSubmitStatus("")
+    setSubmitMessage("")
     try {
-      await apiClient.submitCondolence({
+      const response = await apiClient.submitCondolence({
         name,
         email,
         location,
         message,
       })
-
-      // Reset form
-      setName("")
-      setEmail("")
-      setMessage("")
-      setLocation("")
-
-      alert("Thank you for your condolence message. It has been submitted for review.")
-    } catch (error) {
-      console.error("Failed to submit condolence:", error)
-      alert("Failed to submit condolence. Please try again.")
+      if (response.success) {
+        setSubmitStatus("success")
+        setSubmitMessage("Thank you for your condolence message. It has been submitted for review.")
+        // Reset form
+        setName("")
+        setEmail("")
+        setMessage("")
+        setLocation("")
+        // Reload messages
+        loadCondolences()
+      } else {
+        setSubmitStatus("error")
+        setSubmitMessage(response.error || "Failed to submit condolence. Please try again.")
+      }
+    } catch (error: any) {
+      setSubmitStatus("error")
+      setSubmitMessage(error.message || "Failed to submit condolence. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -140,6 +147,17 @@ export default function CondolencesPage() {
               <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Condolence"}
               </Button>
+              {submitMessage && (
+                <div
+                  className={`mt-4 p-4 rounded-md text-sm ${
+                    submitStatus === "success"
+                      ? "bg-green-50 text-green-800"
+                      : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  {submitMessage}
+                </div>
+              )}
             </form>
           </Card>
 

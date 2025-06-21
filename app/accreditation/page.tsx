@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Users, Camera, Building, Briefcase, Scale, AlertTriangle } from "lucide-react"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
+import apiClient from "@/lib/api"
 
 type AccreditationCategory = "service-provider" | "media" | "mp" | "party-official" | "guest"
 
@@ -27,6 +28,8 @@ export default function AccreditationPage() {
     notes: "",
     consent: false,
   })
+  const [submitStatus, setSubmitStatus] = useState<"" | "success" | "error">("")
+  const [submitMessage, setSubmitMessage] = useState("")
 
   const categories = [
     {
@@ -82,7 +85,18 @@ export default function AccreditationPage() {
       alert("Please select a category and provide consent.")
       return
     }
+    setSubmitStatus("")
+    setSubmitMessage("")
+    try {
+      const response = await apiClient.submitAccreditation({
+        category: selectedCategory,
+        ...formData,
+      })
+      if (response.success) {
+        setSubmitStatus("success")
+        setSubmitMessage("Accreditation request submitted successfully! You will receive a confirmation email shortly.")
 
+<<<<<<< HEAD
     // In a real app, this would submit to an API
     console.log("Accreditation submission:", {
       category: selectedCategory,
@@ -105,6 +119,27 @@ export default function AccreditationPage() {
       notes: "",
       consent: false,
     })
+=======
+        // Reset form
+        setSelectedCategory("")
+        setFormData({
+          fullName: "",
+          idNumber: "",
+          email: "",
+          contactNumber: "",
+          organisation: "",
+          notes: "",
+          consent: false,
+        })
+      } else {
+        setSubmitStatus("error")
+        setSubmitMessage(response.error || "Submission failed. Please try again.")
+      }
+    } catch (error: any) {
+      setSubmitStatus("error")
+      setSubmitMessage(error.message || "Network error. Please check your connection.")
+    }
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
   }
 
   return (
@@ -145,6 +180,7 @@ export default function AccreditationPage() {
           </div>
         </Card>
 
+<<<<<<< HEAD
         {/* Excluded Categories Notice */}
         <Card className="p-4 bg-purple-50 border-purple-200 mb-8">
           <h4 className="font-bold text-purple-800 mb-2">Categories NOT Available in This Portal:</h4>
@@ -154,6 +190,19 @@ export default function AccreditationPage() {
           </div>
           <p className="text-purple-700 text-xs mt-2">These categories use separate invitation processes</p>
         </Card>
+=======
+        {submitStatus && (
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              submitStatus === "success"
+                ? "bg-green-50 border border-green-200 text-green-800"
+                : "bg-red-50 border border-red-200 text-red-800"
+            }`}
+          >
+            {submitMessage}
+          </div>
+        )}
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
 
         {!selectedCategory ? (
           /* Category Selection */
@@ -200,10 +249,15 @@ export default function AccreditationPage() {
               <div>
                 <h2 className="text-3xl font-serif font-bold text-green-800">Accreditation Application</h2>
                 <p className="text-gray-600 mt-2">
+<<<<<<< HEAD
                   Category:
                   <Badge
                     className={`ml-2 ${categories.find((c) => c.id === selectedCategory)?.color} ${categories.find((c) => c.id === selectedCategory)?.textColor}`}
                   >
+=======
+                  Category:{" "}
+                  <Badge className="ml-2">
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
                     {categories.find((c) => c.id === selectedCategory)?.title}
                   </Badge>
                 </p>

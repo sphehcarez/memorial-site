@@ -36,16 +36,15 @@ export default function AdminDashboardPage() {
       // Fetch dashboard data from FastAPI backend
       apiClient.getDashboardData()
         .then((data) => {
-          // Example: adjust this mapping to match your backend response
           setStats([
-            { title: "Total Condolences", value: data.total_condolences, icon: MessageCircle, color: "bg-blue-500" },
-            { title: "Pending Tributes", value: data.pending_tributes, icon: Users, color: "bg-yellow-500" },
-            { title: "Gallery Items", value: data.gallery_items, icon: ImageIcon, color: "bg-green-500" },
-            { title: "Accreditations", value: data.accreditations, icon: Calendar, color: "bg-purple-500" },
+            { title: "Total Condolences", value: String(data.stats.condolences?.total ?? 0), icon: MessageCircle, color: "bg-blue-500" },
+            { title: "Pending Tributes", value: String(data.stats.tributes?.pending ?? 0), icon: Users, color: "bg-yellow-500" },
+            { title: "Gallery Items", value: String(data.stats.gallery?.total ?? 0), icon: ImageIcon, color: "bg-green-500" },
+            { title: "Accreditations", value: String(data.stats.accreditations?.total ?? 0), icon: Calendar, color: "bg-purple-500" },
           ])
-          setRecentActivity(data.recent_activity || [])
+          setRecentActivity(data.recentActivity || [])
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           console.error("Failed to fetch dashboard data:", err)
         })
     } else {
