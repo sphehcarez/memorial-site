@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Users, Shield, Camera, Building } from "lucide-react"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
+import apiClient from "@/lib/api"
 
 type AccreditationCategory = "media" | "guest" | "all-access" | "mp" | "party-official"
 
@@ -26,6 +27,8 @@ export default function AccreditationPage() {
     notes: "",
     consent: false,
   })
+  const [submitStatus, setSubmitStatus] = useState<"" | "success" | "error">("")
+  const [submitMessage, setSubmitMessage] = useState("")
 
   const categories = [
     {
@@ -71,26 +74,36 @@ export default function AccreditationPage() {
       alert("Please select a category and provide consent.")
       return
     }
+    setSubmitStatus("")
+    setSubmitMessage("")
+    try {
+      const response = await apiClient.submitAccreditation({
+        category: selectedCategory,
+        ...formData,
+      })
+      if (response.success) {
+        setSubmitStatus("success")
+        setSubmitMessage("Accreditation request submitted successfully! You will receive a confirmation email shortly.")
 
-    // In a real app, this would submit to an API
-    console.log("Accreditation submission:", {
-      category: selectedCategory,
-      ...formData,
-    })
-
-    alert("Accreditation request submitted successfully! You will receive a confirmation email shortly.")
-
-    // Reset form
-    setSelectedCategory("")
-    setFormData({
-      fullName: "",
-      idNumber: "",
-      email: "",
-      contactNumber: "",
-      organisation: "",
-      notes: "",
-      consent: false,
-    })
+        // Reset form
+        setSelectedCategory("")
+        setFormData({
+          fullName: "",
+          idNumber: "",
+          email: "",
+          contactNumber: "",
+          organisation: "",
+          notes: "",
+          consent: false,
+        })
+      } else {
+        setSubmitStatus("error")
+        setSubmitMessage(response.error || "Submission failed. Please try again.")
+      }
+    } catch (error: any) {
+      setSubmitStatus("error")
+      setSubmitMessage(error.message || "Network error. Please check your connection.")
+    }
   }
 
   return (
@@ -122,6 +135,18 @@ export default function AccreditationPage() {
             </Badge>
           </div>
         </Card>
+
+        {submitStatus && (
+          <div
+            className={`mb-6 p-4 rounded-lg ${
+              submitStatus === "success"
+                ? "bg-green-50 border border-green-200 text-green-800"
+                : "bg-red-50 border border-red-200 text-red-800"
+            }`}
+          >
+            {submitMessage}
+          </div>
+        )}
 
         {!selectedCategory ? (
           /* Category Selection */
@@ -157,7 +182,10 @@ export default function AccreditationPage() {
               <div>
                 <h2 className="text-3xl font-serif font-bold text-green-800">Registration Form</h2>
                 <p className="text-gray-600 mt-2">
-                  Category: <Badge className="ml-2">{categories.find((c) => c.id === selectedCategory)?.title}</Badge>
+                  Category:{" "}
+                  <Badge className="ml-2">
+                    {categories.find((c) => c.id === selectedCategory)?.title}
+                  </Badge>
                 </p>
               </div>
               <Button variant="outline" onClick={() => setSelectedCategory("")}>

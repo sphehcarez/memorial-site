@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +10,7 @@ import { Heart, User, Upload } from "lucide-react"
 import Image from "next/image"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
+import apiClient from "@/lib/api"
 
 interface Tribute {
   id: number
@@ -32,58 +31,70 @@ export default function TributeWallPage() {
     message: "",
     image: null as File | null,
   })
+  const [tributes, setTributes] = useState<Tribute[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"" | "success" | "error">("")
+  const [submitMessage, setSubmitMessage] = useState("")
 
-  // Only show approved tributes
-  const [tributes] = useState<Tribute[]>([
-    {
-      id: 2,
-      name: "John Mwanza",
-      location: "Ndola",
-      message:
-        "A son of the Copperbelt who never forgot where he came from. Dr. Lungu's journey from Ndola to State House inspired many of us. His legacy will live on in our hearts.",
-      timestamp: "2025-06-07T14:15:00Z",
-      approved: true,
-    },
-    {
-      id: 3,
-      name: "Sarah Phiri",
-      location: "Kitwe",
-      message:
-        "During his presidency, Dr. Lungu showed compassion by commuting death sentences. This act of mercy demonstrated his belief in human dignity and second chances.",
-      image: "/placeholder.svg?height=200&width=300",
-      timestamp: "2025-06-08T09:20:00Z",
-      approved: true,
-    },
-    {
-      id: 5,
-      name: "Chief Mukuni",
-      location: "Livingstone",
-      message:
-        "The National Day of Prayer he established brought our nation together in faith. Dr. Lungu understood that leadership requires both political wisdom and spiritual guidance.",
-      timestamp: "2025-06-01T13:15:00Z",
-      approved: true,
-    },
-  ])
+  useEffect(() => {
+    loadTributes()
+  }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const loadTributes = async () => {
+    setIsLoading(true)
+    try {
+      const data = await apiClient.getPublicTributes(20)
+      setTributes(data.filter((t: Tribute) => t.approved))
+    } catch (error) {
+      setSubmitStatus("error")
+      setSubmitMessage("Failed to load tributes.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    // In a real app, this would submit to an API for admin approval
-    console.log("Tribute submission:", formData)
-
-    alert(
-      "Thank you for your tribute! Your message has been submitted for review and will appear on the wall once approved by our administrators.",
-    )
-
-    // Reset form
-    setFormData({
-      name: "",
-      location: "",
-      email: "",
-      phone: "",
-      message: "",
-      image: null,
-    })
+    setIsSubmitting(true)
+    setSubmitStatus("")
+    setSubmitMessage("")
+    try {
+      // For image upload, you may need to adjust backend to accept multipart/form-data
+      const payload: any = { ...formData }
+      if (formData.image) {
+        // If backend supports file upload, use FormData
+        const form = new FormData()
+        Object.entries(formData).forEach(([key, value]) => {
+          if (key === "image" && value) {
+            form.append("image", value as File)
+          } else {
+            form.append(key, value as string)
+          }
+        })
+        await apiClient.submitTribute(form)
+      } else {
+        await apiClient.submitTribute(payload)
+      }
+      setSubmitStatus("success")
+      setSubmitMessage(
+        "Thank you for your tribute! Your message has been submitted for review and will appear on the wall once approved by our administrators.",
+      )
+      setFormData({
+        name: "",
+        location: "",
+        email: "",
+        phone: "",
+        message: "",
+        image: null,
+      })
+      loadTributes()
+    } catch (error: any) {
+      setSubmitStatus("error")
+      setSubmitMessage(error.message || "Failed to submit tribute. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,9 +217,23 @@ export default function TributeWallPage() {
                   </p>
                 </div>
 
-                <Button type="submit" className="w-full bg-green-700 hover:bg-green-800">
-                  Submit Tribute for Review
+                <Button
+                  type="submit"
+                  className="w-full bg-green-700 hover:bg-green-800"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Tribute for Review"}
                 </Button>
+
+                {submitStatus && (
+                  <div
+                    className={`mt-4 p-3 rounded-lg text-sm ${
+                      submitStatus === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
+                    }`}
+                  >
+                    {submitMessage}
+                  </div>
+                )}
               </form>
             </Card>
           </div>
@@ -223,56 +248,62 @@ export default function TributeWallPage() {
               </p>
             </div>
 
-            <div className="space-y-6">
-              {tributes.map((tribute) => (
-                <Card key={tribute.id} className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="w-6 h-6 text-green-700" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-bold text-gray-900">{tribute.name}</h3>
-                        {tribute.location && (
-                          <>
-                            <span className="text-gray-400">•</span>
-                            <span className="text-gray-600 text-sm">{tribute.location}</span>
-                          </>
-                        )}
-                        <span className="text-gray-400">•</span>
-                        <span className="text-gray-500 text-sm">
-                          {new Date(tribute.timestamp).toLocaleDateString()}
-                        </span>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500">Loading tributes...</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {tributes.map((tribute) => (
+                  <Card key={tribute.id} className="p-6 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="w-6 h-6 text-green-700" />
                       </div>
-
-                      {tribute.image && (
-                        <div className="mb-4">
-                          <Image
-                            src={tribute.image || "/placeholder.svg"}
-                            alt="Tribute image"
-                            width={300}
-                            height={200}
-                            className="rounded-lg object-cover"
-                          />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-bold text-gray-900">{tribute.name}</h3>
+                          {tribute.location && (
+                            <>
+                              <span className="text-gray-400">•</span>
+                              <span className="text-gray-600 text-sm">{tribute.location}</span>
+                            </>
+                          )}
+                          <span className="text-gray-400">•</span>
+                          <span className="text-gray-500 text-sm">
+                            {new Date(tribute.timestamp).toLocaleDateString()}
+                          </span>
                         </div>
-                      )}
 
-                      <p className="text-gray-700 leading-relaxed mb-3">{tribute.message}</p>
+                        {tribute.image && (
+                          <div className="mb-4">
+                            <Image
+                              src={tribute.image || "/placeholder.svg"}
+                              alt="Tribute image"
+                              width={300}
+                              height={200}
+                              className="rounded-lg object-cover"
+                            />
+                          </div>
+                        )}
 
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          <Heart className="w-3 h-3 mr-1 text-red-500" />
-                          Tribute
-                        </Badge>
-                        <Badge variant="outline" className="text-xs border-green-500 text-green-700">
-                          ✓ Approved
-                        </Badge>
+                        <p className="text-gray-700 leading-relaxed mb-3">{tribute.message}</p>
+
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">
+                            <Heart className="w-3 h-3 mr-1 text-red-500" />
+                            Tribute
+                          </Badge>
+                          <Badge variant="outline" className="text-xs border-green-500 text-green-700">
+                            ✓ Approved
+                          </Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             {/* Load More Button */}
             <div className="text-center mt-8">
