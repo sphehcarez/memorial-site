@@ -1,18 +1,22 @@
 from sqlalchemy import create_engine
 from models import Base
 import os
+from dotenv import load_dotenv
 
-# Ensure directory exists
-db_folder = os.path.join(os.getcwd(), "memorialDB")
-os.makedirs(db_folder, exist_ok=True)
+load_dotenv()
 
-# Full path to memorialDB.db
-db_path = os.path.join(db_folder, "memorialDB.db")
+MYSQL_USER = os.getenv("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "12345")
+MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
+MYSQL_DB = os.getenv("MYSQL_DB", "memorialDB")
 
-print(f"⏳ Initializing SQLite database: {db_path} ...")
+DATABASE_URL = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+
+print(f"⏳ Initializing MySQL database: {DATABASE_URL} ...")
 
 # Create engine
-engine = create_engine(f"sqlite:///{db_path}", echo=True)
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Create tables
 Base.metadata.create_all(bind=engine)

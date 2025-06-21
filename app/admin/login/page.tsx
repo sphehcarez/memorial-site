@@ -28,8 +28,9 @@ export default function AdminLoginPage() {
       const response = await apiClient.login(credentials.username, credentials.password)
 
       if (response.success) {
+        localStorage.setItem("adminAuth", "true")
         console.log("Login successful, redirecting...")
-        router.push("/admin")
+        router.push("/admin/dashboard")
       } else {
         setError(response.error || "Login failed")
       }
