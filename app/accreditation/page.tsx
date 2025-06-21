@@ -9,12 +9,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Users, Shield, Camera, Building } from "lucide-react"
+import { Users, Camera, Building, Briefcase, Scale, AlertTriangle } from "lucide-react"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
 import apiClient from "@/lib/api"
 
-type AccreditationCategory = "media" | "guest" | "all-access" | "mp" | "party-official"
+type AccreditationCategory = "service-provider" | "media" | "mp" | "party-official" | "guest"
 
 export default function AccreditationPage() {
   const [selectedCategory, setSelectedCategory] = useState<AccreditationCategory | "">("")
@@ -24,6 +24,7 @@ export default function AccreditationPage() {
     email: "",
     contactNumber: "",
     organisation: "",
+    position: "",
     notes: "",
     consent: false,
   })
@@ -32,39 +33,49 @@ export default function AccreditationPage() {
 
   const categories = [
     {
+      id: "service-provider" as const,
+      title: "Service Provider",
+      description: "Event services, security, catering, technical support",
+      icon: Briefcase,
+      color: "bg-black",
+      textColor: "text-white",
+      borderColor: "border-black",
+    },
+    {
       id: "media" as const,
       title: "Media",
-      description: "Journalists, Photographers, and Media personnel",
+      description: "Journalists, photographers, broadcasters, media personnel",
       icon: Camera,
-      color: "bg-blue-500",
-    },
-    {
-      id: "guest" as const,
-      title: "Guest",
-      description: "Legal Fraternity, Former Ministers, Former aides/staff",
-      icon: Users,
-      color: "bg-green-500",
-    },
-    {
-      id: "all-access" as const,
-      title: "All Access / Event Management",
-      description: "Event Organizers and Management Personnel",
-      icon: Shield,
-      color: "bg-purple-500",
+      color: "bg-red-500",
+      textColor: "text-white",
+      borderColor: "border-red-500",
     },
     {
       id: "mp" as const,
       title: "Member of Parliament",
-      description: "Current and Former Members of Parliament",
+      description: "Current and former Members of Parliament",
       icon: Building,
-      color: "bg-red-500",
+      color: "bg-orange-500",
+      textColor: "text-white",
+      borderColor: "border-orange-500",
     },
     {
       id: "party-official" as const,
       title: "Party Official",
-      description: "Political Party Officials and Representatives",
+      description: "Political party officials and representatives",
       icon: Users,
-      color: "bg-orange-500",
+      color: "bg-green-500",
+      textColor: "text-white",
+      borderColor: "border-green-500",
+    },
+    {
+      id: "guest" as const,
+      title: "Guest",
+      description: "Legal fraternity, clergy, former ministers, former officials",
+      icon: Scale,
+      color: "bg-yellow-500",
+      textColor: "text-black",
+      borderColor: "border-yellow-500",
     },
   ]
 
@@ -85,6 +96,30 @@ export default function AccreditationPage() {
         setSubmitStatus("success")
         setSubmitMessage("Accreditation request submitted successfully! You will receive a confirmation email shortly.")
 
+<<<<<<< HEAD
+    // In a real app, this would submit to an API
+    console.log("Accreditation submission:", {
+      category: selectedCategory,
+      ...formData,
+    })
+
+    alert(
+      "Accreditation request submitted successfully! You will receive a confirmation email once your application is approved and verified.",
+    )
+
+    // Reset form
+    setSelectedCategory("")
+    setFormData({
+      fullName: "",
+      idNumber: "",
+      email: "",
+      contactNumber: "",
+      organisation: "",
+      position: "",
+      notes: "",
+      consent: false,
+    })
+=======
         // Reset form
         setSelectedCategory("")
         setFormData({
@@ -104,6 +139,7 @@ export default function AccreditationPage() {
       setSubmitStatus("error")
       setSubmitMessage(error.message || "Network error. Please check your connection.")
     }
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
   }
 
   return (
@@ -111,7 +147,7 @@ export default function AccreditationPage() {
       {/* Header */}
       <div className="bg-green-800 text-white py-8">
         <div className="max-w-6xl mx-auto px-4">
-          <h1 className="text-4xl font-serif font-bold">Accreditation Registration</h1>
+          <h1 className="text-4xl font-serif font-bold">Accreditation Portal</h1>
           <p className="text-xl mt-2">Memorial Service Access Registration</p>
         </div>
       </div>
@@ -121,21 +157,40 @@ export default function AccreditationPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Important Notice */}
-        <Card className="p-6 bg-yellow-50 border-yellow-200 mb-8">
-          <h3 className="font-bold text-yellow-800 mb-2">Important Notice</h3>
-          <p className="text-yellow-700 text-sm">
-            The following categories are <strong>excluded</strong> from this registration portal and should not apply:
-          </p>
-          <div className="flex gap-2 mt-2">
-            <Badge variant="outline" className="border-red-500 text-red-700">
-              Family Members
-            </Badge>
-            <Badge variant="outline" className="border-red-500 text-red-700">
-              VVIP
-            </Badge>
+        <Card className="p-6 bg-red-50 border-red-200 mb-8">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
+            <div>
+              <h3 className="font-bold text-red-800 mb-3">Important Notice</h3>
+              <div className="space-y-3 text-red-700 text-sm">
+                <p>
+                  <strong>Family</strong> and <strong>VIP-Friends</strong> categories are <strong>NOT</strong> available
+                  through this public portal.
+                </p>
+                <p>
+                  All other attendees must be accredited through this portal or will be seated in{" "}
+                  <strong>General Access</strong>.
+                </p>
+                <p className="font-semibold">
+                  All applications are subject to <strong>vetting and verification</strong>. A confirmation email will
+                  be sent once approval is granted and your accreditation tag will be made available.
+                </p>
+              </div>
+            </div>
           </div>
         </Card>
 
+<<<<<<< HEAD
+        {/* Excluded Categories Notice */}
+        <Card className="p-4 bg-purple-50 border-purple-200 mb-8">
+          <h4 className="font-bold text-purple-800 mb-2">Categories NOT Available in This Portal:</h4>
+          <div className="flex gap-2">
+            <Badge className="bg-purple-500 text-white">Family</Badge>
+            <Badge className="bg-white text-black border border-gray-300">VIP - Friends</Badge>
+          </div>
+          <p className="text-purple-700 text-xs mt-2">These categories use separate invitation processes</p>
+        </Card>
+=======
         {submitStatus && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -147,6 +202,7 @@ export default function AccreditationPage() {
             {submitMessage}
           </div>
         )}
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
 
         {!selectedCategory ? (
           /* Category Selection */
@@ -158,32 +214,50 @@ export default function AccreditationPage() {
                 return (
                   <Card
                     key={category.id}
-                    className="p-6 cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-green-300"
+                    className={`p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 hover:${category.borderColor} hover:scale-105`}
                     onClick={() => setSelectedCategory(category.id)}
                   >
                     <div className="text-center">
                       <div
-                        className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4`}
+                        className={`w-16 h-16 ${category.color} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}
                       >
-                        <IconComponent className="w-8 h-8 text-white" />
+                        <IconComponent className={`w-8 h-8 ${category.textColor}`} />
                       </div>
                       <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-                      <p className="text-gray-600 text-sm">{category.description}</p>
+                      <p className="text-gray-600 text-sm mb-3">{category.description}</p>
+                      <Badge className={`${category.color} ${category.textColor} shadow-sm`}>{category.title}</Badge>
                     </div>
                   </Card>
                 )
               })}
             </div>
+
+            {/* General Access Notice */}
+            <Card className="p-4 bg-gray-100 border-gray-300 mt-8">
+              <div className="text-center">
+                <h4 className="font-bold text-gray-800 mb-2">General Access</h4>
+                <p className="text-gray-600 text-sm">
+                  Attendees without accreditation will be seated in the general access area
+                </p>
+              </div>
+            </Card>
           </div>
         ) : (
           /* Registration Form */
           <div>
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-3xl font-serif font-bold text-green-800">Registration Form</h2>
+                <h2 className="text-3xl font-serif font-bold text-green-800">Accreditation Application</h2>
                 <p className="text-gray-600 mt-2">
+<<<<<<< HEAD
+                  Category:
+                  <Badge
+                    className={`ml-2 ${categories.find((c) => c.id === selectedCategory)?.color} ${categories.find((c) => c.id === selectedCategory)?.textColor}`}
+                  >
+=======
                   Category:{" "}
                   <Badge className="ml-2">
+>>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
                     {categories.find((c) => c.id === selectedCategory)?.title}
                   </Badge>
                 </p>
@@ -250,29 +324,43 @@ export default function AccreditationPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="organisation" className="block text-sm font-medium text-gray-700 mb-2">
-                    Organisation / Affiliation *
-                  </label>
-                  <Input
-                    id="organisation"
-                    value={formData.organisation}
-                    onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
-                    required
-                    placeholder="Enter your organisation or affiliation"
-                  />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="organisation" className="block text-sm font-medium text-gray-700 mb-2">
+                      Organisation / Affiliation *
+                    </label>
+                    <Input
+                      id="organisation"
+                      value={formData.organisation}
+                      onChange={(e) => setFormData({ ...formData, organisation: e.target.value })}
+                      required
+                      placeholder="Enter your organisation"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
+                      Position / Title *
+                    </label>
+                    <Input
+                      id="position"
+                      value={formData.position}
+                      onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                      required
+                      placeholder="Enter your position or title"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                    Optional Notes
+                    Additional Information
                   </label>
                   <Textarea
                     id="notes"
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     rows={3}
-                    placeholder="Any special requirements (dietary, accessibility, etc.)"
+                    placeholder="Any special requirements, dietary needs, accessibility requirements, etc."
                   />
                 </div>
 
@@ -284,22 +372,28 @@ export default function AccreditationPage() {
                   />
                   <label htmlFor="consent" className="text-sm text-gray-700">
                     I consent to the processing of my personal data for accreditation purposes and understand that this
-                    information will be used solely for memorial service access management. *
+                    information will be used solely for memorial service access management. I acknowledge that all
+                    applications are subject to vetting and verification. *
                   </label>
                 </div>
 
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-bold text-blue-800 mb-2">What happens next?</h4>
+                  <h4 className="font-bold text-blue-800 mb-2">Vetting & Verification Process</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• Your application will be reviewed by our team</li>
-                    <li>• You will receive an email confirmation within 24-48 hours</li>
-                    <li>• Approved applicants will receive accreditation details and instructions</li>
+                    <li>• Your application will be reviewed and verified by our security team</li>
+                    <li>• You will receive a confirmation email within 48-72 hours if approved</li>
+                    <li>• Approved applicants will receive accreditation details and access instructions</li>
                     <li>• Please bring valid ID and confirmation email to the venue</li>
+                    <li>• Your accreditation tag will be available for collection at the venue</li>
                   </ul>
                 </div>
 
-                <Button type="submit" className="w-full bg-green-700 hover:bg-green-800" disabled={!formData.consent}>
-                  Submit Accreditation Request
+                <Button
+                  type="submit"
+                  className="w-full bg-green-700 hover:bg-green-800 text-lg py-3"
+                  disabled={!formData.consent}
+                >
+                  Submit Accreditation Application
                 </Button>
               </form>
             </Card>
