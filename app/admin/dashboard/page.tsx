@@ -7,15 +7,47 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, MessageCircle, ImageIcon, Calendar, Settings, LogOut, Eye, Plus, BarChart3 } from "lucide-react"
 import Link from "next/link"
+import apiClient from "@/lib/api"
+
+// Add type for recent activity
+interface RecentActivityItem {
+  id: number;
+  type: string;
+  user: string;
+  action: string;
+  time: string;
+}
 
 export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [stats, setStats] = useState([
+    { title: "Total Condolences", value: "-", icon: MessageCircle, color: "bg-blue-500" },
+    { title: "Pending Tributes", value: "-", icon: Users, color: "bg-yellow-500" },
+    { title: "Gallery Items", value: "-", icon: ImageIcon, color: "bg-green-500" },
+    { title: "Accreditations", value: "-", icon: Calendar, color: "bg-purple-500" },
+  ])
+  const [recentActivity, setRecentActivity] = useState<RecentActivityItem[]>([])
   const router = useRouter()
 
   useEffect(() => {
     const auth = localStorage.getItem("adminAuth")
     if (auth === "true") {
       setIsAuthenticated(true)
+      // Fetch dashboard data from FastAPI backend
+      apiClient.getDashboardData()
+        .then((data) => {
+          // Example: adjust this mapping to match your backend response
+          setStats([
+            { title: "Total Condolences", value: data.total_condolences, icon: MessageCircle, color: "bg-blue-500" },
+            { title: "Pending Tributes", value: data.pending_tributes, icon: Users, color: "bg-yellow-500" },
+            { title: "Gallery Items", value: data.gallery_items, icon: ImageIcon, color: "bg-green-500" },
+            { title: "Accreditations", value: data.accreditations, icon: Calendar, color: "bg-purple-500" },
+          ])
+          setRecentActivity(data.recent_activity || [])
+        })
+        .catch((err) => {
+          console.error("Failed to fetch dashboard data:", err)
+        })
     } else {
       router.push("/admin/login")
     }
@@ -29,20 +61,6 @@ export default function AdminDashboardPage() {
   if (!isAuthenticated) {
     return <div>Loading...</div>
   }
-
-  const stats = [
-    { title: "Total Condolences", value: "1,247", icon: MessageCircle, color: "bg-blue-500" },
-    { title: "Pending Tributes", value: "23", icon: Users, color: "bg-yellow-500" },
-    { title: "Gallery Items", value: "156", icon: ImageIcon, color: "bg-green-500" },
-    { title: "Accreditations", value: "89", icon: Calendar, color: "bg-purple-500" },
-  ]
-
-  const recentActivity = [
-    { id: 1, type: "condolence", user: "Mary Banda", action: "submitted condolence", time: "2 minutes ago" },
-    { id: 2, type: "tribute", user: "John Mwanza", action: "submitted tribute", time: "15 minutes ago" },
-    { id: 3, type: "accreditation", user: "Sarah Phiri", action: "registered for media access", time: "1 hour ago" },
-    { id: 4, type: "condolence", user: "David Tembo", action: "submitted condolence", time: "2 hours ago" },
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
