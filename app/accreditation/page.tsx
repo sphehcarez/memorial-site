@@ -155,7 +155,6 @@ export default function AccreditationPage() {
           </div>
         </Card>
 
-<<<<<<< HEAD
         {/* Excluded Categories Notice */}
         <Card className="p-4 bg-purple-50 border-purple-200 mb-8">
           <h4 className="font-bold text-purple-800 mb-2">Categories NOT Available in This Portal:</h4>
@@ -165,7 +164,7 @@ export default function AccreditationPage() {
           </div>
           <p className="text-purple-700 text-xs mt-2">These categories use separate invitation processes</p>
         </Card>
-=======
+
         {submitStatus && (
           <div
             className={`mb-6 p-4 rounded-lg ${
