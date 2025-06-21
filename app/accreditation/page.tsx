@@ -95,31 +95,6 @@ export default function AccreditationPage() {
       if (response.success) {
         setSubmitStatus("success")
         setSubmitMessage("Accreditation request submitted successfully! You will receive a confirmation email shortly.")
-
-<<<<<<< HEAD
-    // In a real app, this would submit to an API
-    console.log("Accreditation submission:", {
-      category: selectedCategory,
-      ...formData,
-    })
-
-    alert(
-      "Accreditation request submitted successfully! You will receive a confirmation email once your application is approved and verified.",
-    )
-
-    // Reset form
-    setSelectedCategory("")
-    setFormData({
-      fullName: "",
-      idNumber: "",
-      email: "",
-      contactNumber: "",
-      organisation: "",
-      position: "",
-      notes: "",
-      consent: false,
-    })
-=======
         // Reset form
         setSelectedCategory("")
         setFormData({
@@ -128,6 +103,7 @@ export default function AccreditationPage() {
           email: "",
           contactNumber: "",
           organisation: "",
+          position: "",
           notes: "",
           consent: false,
         })
@@ -139,7 +115,6 @@ export default function AccreditationPage() {
       setSubmitStatus("error")
       setSubmitMessage(error.message || "Network error. Please check your connection.")
     }
->>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
   }
 
   return (
@@ -156,31 +131,6 @@ export default function AccreditationPage() {
       <Navigation />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Important Notice */}
-        <Card className="p-6 bg-red-50 border-red-200 mb-8">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-bold text-red-800 mb-3">Important Notice</h3>
-              <div className="space-y-3 text-red-700 text-sm">
-                <p>
-                  <strong>Family</strong> and <strong>VIP-Friends</strong> categories are <strong>NOT</strong> available
-                  through this public portal.
-                </p>
-                <p>
-                  All other attendees must be accredited through this portal or will be seated in{" "}
-                  <strong>General Access</strong>.
-                </p>
-                <p className="font-semibold">
-                  All applications are subject to <strong>vetting and verification</strong>. A confirmation email will
-                  be sent once approval is granted and your accreditation tag will be made available.
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-<<<<<<< HEAD
         {/* Excluded Categories Notice */}
         <Card className="p-4 bg-purple-50 border-purple-200 mb-8">
           <h4 className="font-bold text-purple-800 mb-2">Categories NOT Available in This Portal:</h4>
@@ -190,7 +140,7 @@ export default function AccreditationPage() {
           </div>
           <p className="text-purple-700 text-xs mt-2">These categories use separate invitation processes</p>
         </Card>
-=======
+
         {submitStatus && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -202,7 +152,6 @@ export default function AccreditationPage() {
             {submitMessage}
           </div>
         )}
->>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
 
         {!selectedCategory ? (
           /* Category Selection */
@@ -249,15 +198,10 @@ export default function AccreditationPage() {
               <div>
                 <h2 className="text-3xl font-serif font-bold text-green-800">Accreditation Application</h2>
                 <p className="text-gray-600 mt-2">
-<<<<<<< HEAD
                   Category:
                   <Badge
                     className={`ml-2 ${categories.find((c) => c.id === selectedCategory)?.color} ${categories.find((c) => c.id === selectedCategory)?.textColor}`}
                   >
-=======
-                  Category:{" "}
-                  <Badge className="ml-2">
->>>>>>> 275a07aa56b45b6f47af4e21a429d1f53ae2c6e0
                     {categories.find((c) => c.id === selectedCategory)?.title}
                   </Badge>
                 </p>
