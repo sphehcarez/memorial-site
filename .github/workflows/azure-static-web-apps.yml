@@ -11,29 +11,29 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy
     steps:
-      - name: Checkout code
+      - name: ⬇️ Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        run: npm install
+      - name: 📦 Install dependencies with legacy peer support
+        run: npm install --legacy-peer-deps
 
-      - name: Build the project
+      - name: 🏗️ Build the Next.js project
         run: npm run build
 
-      - name: Export static site
+      - name: 🗂️ Export static site from Next.js
         run: npx next export
 
-      - name: Deploy to Azure Static Web Apps
+      - name: 🚀 Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used to retrieve repo content
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used to access the repo
           action: "upload"
-          app_location: "/"                       # Root of your project
-          output_location: "out"                  # 'out' is the folder from `next export`
-          api_location: ""                        # Leave blank if not using Azure Functions
+          app_location: "/"       # Location of your app source code
+          output_location: "out"  # Output directory from `next export`
+          api_location: ""        # Leave blank if not using Azure Functions
