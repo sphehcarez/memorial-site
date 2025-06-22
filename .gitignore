@@ -1,27 +1,47 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+*.dll
+*.pyd
 
-# dependencies
-/node_modules
+# Virtual environment
+venv/
+.venv/
 
-# next.js
-/.next/
-/out/
+# Environment variables
+.env
+.env.*
 
-# production
-/build
+# Python egg metadata
+*.egg-info/
+*.egg
 
-# debug
+# MySQL dumps / local DB
+*.sql
+*.db
+
+# VSCode project settings (optional)
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Node.js
+node_modules/
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+pnpm-lock.yaml
+yarn.lock
 
-# env files
-.env*
+# Build outputs
+dist/
+build/
+.cache/
+.next/
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Static output (Next.js)
+out/
