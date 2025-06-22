@@ -57,7 +57,7 @@ export default function BurialDetailsPage() {
     {
       time: "8:00 AM",
       event: "Venue preparation and setup",
-      location: "National Heroes Stadium",
+      location: "FNB Stadium",
       status: "preparation",
     },
     { time: "9:00 AM", event: "VIP and family arrival", location: "Private entrance", status: "vip" },
@@ -69,31 +69,29 @@ export default function BurialDetailsPage() {
     { time: "12:00 PM", event: "Cultural performances", location: "Main arena", status: "ceremony" },
     { time: "12:30 PM", event: "Final prayers and benediction", location: "Main arena", status: "ceremony" },
     { time: "1:00 PM", event: "Service conclusion", location: "Main arena", status: "ceremony" },
-    { time: "2:00 PM", event: "Private burial ceremony", location: "Presidential Cemetery", status: "private" },
+    { time: "2:00 PM", event: "Private burial ceremony", location: "Westpark Cemetery", status: "private" },
   ]
 
   const speakers = [
-    { name: "Hon. Hakainde Hichilema", title: "President of Zambia", time: "11:30 AM" },
-    { name: "Hon. Mutale Nalumango", title: "Vice President", time: "11:00 AM" },
     { name: "Most Rev. Alick Banda", title: "Archbishop of Lusaka", time: "10:15 AM" },
-    { name: "Chief Mukuni", title: "Traditional Leader", time: "10:45 AM" },
-    { name: "Dr. Christine Kaseba", title: "Family Representative", time: "11:15 AM" },
+    { name: "Hon. Given Lucinda", title: "Acting President Patriotic Front", time: "11:00 AM" },
+    { name: "Hon. Tasila Lungu", title: "Family Representative", time: "11:15 AM" },
   ]
 
   const venues = [
     {
-      name: "National Heroes Stadium",
+      name: "FNB Stadium",
       type: "Main Venue",
-      capacity: "60,000",
-      address: "Independence Avenue, Lusaka",
+      capacity: "94,000",
+      address: "Soccer City, Johannesburg, South Africa",
       facilities: ["Wheelchair Access", "Medical Station", "VIP Lounge", "Media Center"],
       parking: "Limited - Shuttle Service Recommended",
     },
     {
-      name: "Presidential Cemetery",
+      name: "Westpark Cemetery",
       type: "Burial Site",
       capacity: "Private Ceremony",
-      address: "Embassy Park, Lusaka",
+      address: "Westpark, Johannesburg, South Africa",
       facilities: ["Family Area", "Security Perimeter", "Media Viewing Area"],
       parking: "Restricted Access",
     },
@@ -192,18 +190,23 @@ export default function BurialDetailsPage() {
                     <MapPin className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Venue</h3>
-                      <p className="text-gray-600">National Heroes Stadium</p>
-                      <p className="text-gray-500 text-sm">Independence Avenue, Lusaka</p>
+                      <p className="text-gray-600">FNB Stadium</p>
+                      <p className="text-gray-500 text-sm">Soccer City, Johannesburg, South Africa</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Video className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Livestream</h3>
-                      <p className="text-gray-600">Available on ZNBC and online</p>
-                      <Link href="/livestream" className="text-green-700 text-sm hover:underline">
-                        Watch online →
-                      </Link>
+                      <p className="text-gray-600">Available on Grindstone Television</p>
+                      <a
+                        href="https://www.youtube.com/@grindstonetelevisionzambia163"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green-700 text-sm hover:underline"
+                      >
+                        Watch on YouTube →
+                      </a>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -439,7 +442,7 @@ export default function BurialDetailsPage() {
                 <Mail className="w-5 h-5 text-green-700" />
                 <div>
                   <h3 className="font-bold">Email Support</h3>
-                  <p className="text-gray-600">memorial@gov.zm</p>
+                  <p className="text-gray-600">info@remberingecl.org</p>
                   <p className="text-gray-500 text-sm">Response within 2 hours</p>
                 </div>
               </div>
