@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "clean": "rm -rf .next out node_modules",
     "dev": "next dev",
-    "export": "next export",
+    "build": "next build",                  
+    "start": "next start",
     "lint": "next lint",
-    "start": "next start"
+    "clean": "rm -rf .next out node_modules"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
