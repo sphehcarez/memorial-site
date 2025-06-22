@@ -121,7 +121,7 @@ export default function ObituaryPage() {
       {/* Modern Header */}
       <div className="bg-gradient-to-r from-green-900 via-green-800 to-green-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 bg-[url('/us-flag-background.jpg')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/zambia-eagle-bg.png')] bg-cover bg-center opacity-10"></div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-16">
           <div className="text-center">
             <Badge className="bg-white/20 text-white border-white/30 px-4 py-2 text-sm font-medium mb-6">
@@ -140,8 +140,7 @@ export default function ObituaryPage() {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white/10 px-8 py-3 text-lg font-semibold"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
               >
                 <Share2 className="w-5 h-5 mr-2" />
                 Share Obituary
