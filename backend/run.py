@@ -1,6 +1,9 @@
 import os
 
-# Only import uvicorn when running locally
+# ✅ Ensure the FastAPI app is accessible at the top level for gunicorn
+from main import app  # gunicorn looks for `app` in `run:app`
+
+# 🟢 Local development only
 if __name__ == "__main__":
     import uvicorn
 
@@ -15,5 +18,5 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=8000,
         reload=True,
-        reload_dirs=["backend"],  # 👈 limit autoreload to backend folder only
+        reload_dirs=["backend"],  # 🔁 Watch only backend for changes
     )
