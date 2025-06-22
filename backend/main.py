@@ -12,11 +12,16 @@ from dotenv import load_dotenv
 import io
 from fastapi import Path
 
-from database import Database, get_db
+# Use relative import for local dev, fallback for prod
+try:
+    from database import Database, get_db  # Local dev (run from backend/)
+except ImportError:
+    from backend.database import Database, get_db  # Prod (run from project root)
+
 from models import *
 from schemas import (
     StatusUpdate, TributeResponse, AuthResponse, AdminLoginRequest, AdminUserResponse, DashboardResponse,
-    CondolenceResponse, SubmissionResponse, CondolenceSubmission, AccreditationResponse
+    CondolenceResponse, SubmissionResponse, CondolenceSubmission, AccreditationResponse, DashboardStats, RecentActivity
 )
 from pdf_generator import pdf_generator
 from obituary_generator import obituary_generator
@@ -32,7 +37,10 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://memorial.vercel.app", "*"],
+    allow_origins=[
+        "http://localhost:3000",  # ✅ for local dev
+        "https://memorial.vercel.app"  # ✅ production frontend
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -115,45 +123,41 @@ async def admin_login(credentials: AdminLoginRequest, db: Database = Depends(get
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Support both bcrypt and legacy plain password
-        if admin.password_hash:
-            if not bcrypt.checkpw(credentials.password.encode('utf-8'), admin.password_hash.encode('utf-8')):
+        if admin.get("password_hash"):
+            if not bcrypt.checkpw(credentials.password.encode('utf-8'), admin["password_hash"].encode('utf-8')):
                 raise HTTPException(status_code=401, detail="Invalid credentials")
-        elif admin.password:
-            if credentials.password != admin.password:
+        elif admin.get("password"):
+            if credentials.password != admin["password"]:
                 raise HTTPException(status_code=401, detail="Invalid credentials")
         else:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        
         # Update last login
-        await db.update_admin_last_login(admin.id)
-        
+        await db.update_admin_last_login(admin["id"])
         # Create JWT token
         token_data = {
-            "id": admin.id,
-            "username": admin.username,
-            "role": admin.role,
-            "fullName": admin.full_name,
+            "id": admin["id"],
+            "username": admin["username"],
+            "role": admin["role"],
+            "fullName": admin["full_name"],
             "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS)
         }
         token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
-        
         # Log admin action
         await db.log_admin_action(
-            admin_id=admin.id,
+            admin_id=admin["id"],
             action="login",
             entity_type="user",
-            entity_id=admin.id
+            entity_id=admin["id"]
         )
-        
         return AuthResponse(
             success=True,
             token=token,
             user=AdminUserResponse(
-                id=admin.id,
-                username=admin.username,
-                fullName=admin.full_name,
-                role=admin.role,
-                email=admin.email
+                id=admin["id"],
+                username=admin["username"],
+                fullName=admin["full_name"],
+                role=admin["role"],
+                email=admin["email"]
             )
         )
     except HTTPException:
@@ -174,27 +178,30 @@ async def get_dashboard_data(admin: AdminUser = Depends(get_current_admin), db: 
             "tributes": await db.get_tributes(limit=5),
             "accreditations": await db.get_accreditations(limit=5)
         }
-        # Count only images for Gallery Items
         gallery_image_count = await db.count_gallery_images()
         return DashboardResponse(
-            stats={
-                "condolences": {
+            stats=DashboardStats(
+                condolences={
                     "total": stats["condolences"]["total"],
                     "pending": stats["condolences"]["pending"]
                 },
-                "tributes": {
+                tributes={
                     "total": stats["tributes"]["total"],
                     "pending": stats["tributes"]["pending"]
                 },
-                "accreditations": {
+                accreditations={
                     "total": stats["accreditations"]["total"],
                     "pending": stats["accreditations"]["pending"]
                 },
-                "gallery": {
+                gallery={
                     "total": gallery_image_count
                 }
-            },
-            recentActivity=recent_activity
+            ),
+            recentActivity=RecentActivity(
+                condolences=[CondolenceResponse(**c) for c in recent_activity["condolences"]],
+                tributes=[TributeResponse(**t) for t in recent_activity["tributes"]],
+                accreditations=[AccreditationResponse(**a) for a in recent_activity["accreditations"]],
+            )
         )
     except Exception as e:
         print(f"Dashboard error: {e}")
@@ -294,16 +301,23 @@ async def list_accreditations(
 @app.put("/api/admin/accreditations/{accreditation_id}/status")
 async def update_accreditation_status(
     accreditation_id: int = Path(..., description="Accreditation ID"),
-    update: StatusUpdate = None,
+    update: Optional[StatusUpdate] = None,
     admin: AdminUser = Depends(get_current_admin),
     db: Database = Depends(get_db),
 ):
     """Update accreditation status (approve/reject) (admin only)"""
     try:
+        # Defensive: check if update is None before accessing its attributes
+        if update is None:
+            raise HTTPException(status_code=400, detail="Missing update payload")
+        
+        admin_id = admin["id"] if isinstance(admin, dict) else getattr(admin, "id", None)
+        if not isinstance(admin_id, int):
+            raise HTTPException(status_code=500, detail="Invalid admin id type")
         await db.update_accreditation_status(
             accreditation_id=accreditation_id,
             status=update.status,
-            admin_id=admin.id,
+            admin_id=admin_id,
             notes=update.notes,
         )
         return {"success": True, "message": f"Accreditation {accreditation_id} status updated to {update.status}"}
@@ -332,16 +346,23 @@ async def list_condolences(
 @app.put("/api/admin/condolences/{condolence_id}/status")
 async def update_condolence_status(
     condolence_id: int = Path(..., description="Condolence ID"),
-    update: StatusUpdate = None,
+    update: Optional[StatusUpdate] = None,
     admin: AdminUser = Depends(get_current_admin),
     db: Database = Depends(get_db),
 ):
     """Update condolence status (approve/reject) (admin only)"""
     try:
+        # Defensive: check if update is None before accessing its attributes
+        if update is None:
+            raise HTTPException(status_code=400, detail="Missing update payload")
+        
+        admin_id = admin["id"] if isinstance(admin, dict) else getattr(admin, "id", None)
+        if not isinstance(admin_id, int):
+            raise HTTPException(status_code=500, detail="Invalid admin id type")
         await db.update_condolence_status(
             condolence_id=condolence_id,
             status=update.status,
-            admin_id=admin.id,
+            admin_id=admin_id,
             notes=update.notes,
         )
         return {"success": True, "message": f"Condolence {condolence_id} status updated to {update.status}"}
@@ -370,16 +391,23 @@ async def list_tributes(
 @app.put("/api/admin/tributes/{tribute_id}/status")
 async def update_tribute_status(
     tribute_id: int = Path(..., description="Tribute ID"),
-    update: StatusUpdate = None,
+    update: Optional[StatusUpdate] = None,
     admin: AdminUser = Depends(get_current_admin),
     db: Database = Depends(get_db),
 ):
     """Update tribute status (approve/reject) (admin only)"""
     try:
+        # Defensive: check if update is None before accessing its attributes
+        if update is None:
+            raise HTTPException(status_code=400, detail="Missing update payload")
+        
+        admin_id = admin["id"] if isinstance(admin, dict) else getattr(admin, "id", None)
+        if not isinstance(admin_id, int):
+            raise HTTPException(status_code=500, detail="Invalid admin id type")
         await db.update_tribute_status(
             tribute_id=tribute_id,
             status=update.status,
-            admin_id=admin.id,
+            admin_id=admin_id,
             notes=update.notes,
         )
         return {"success": True, "message": f"Tribute {tribute_id} status updated to {update.status}"}

@@ -2,13 +2,14 @@ import asyncio
 import aiomysql
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 import os
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import json
 import bcrypt
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 from models import *
 
@@ -16,18 +17,16 @@ load_dotenv()
 
 # MySQL Database configuration
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "12345")
+MYSQL_PASSWORD = quote_plus(os.getenv("MYSQL_PASSWORD", "Mz@2025!RootSQL"))
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
 MYSQL_DB = os.getenv("MYSQL_DB", "memorialDB")
 
-DATABASE_URL = (
-    f"mysql+aiomysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
-)
+DATABASE_URL = f"mysql+aiomysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
 
 # Async engine and sessionmaker
 engine = create_async_engine(DATABASE_URL, echo=True)
-AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
+AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 class Database:
     def __init__(self, session: AsyncSession):
@@ -124,7 +123,11 @@ class Database:
             "user_agent": data.get("userAgent")
         })
         await self.session.commit()
-        return result.lastrowid
+        result_id = await self.session.execute(text("SELECT LAST_INSERT_ID()"))
+        last_id = result_id.scalar()
+        if last_id is None:
+            raise Exception("Failed to retrieve last inserted id for condolence")
+        return int(last_id)
 
     async def update_condolence_status(self, condolence_id: int, status: str, admin_id: int, notes: Optional[str] = None):
         """Update condolence status"""
@@ -181,7 +184,11 @@ class Database:
             "user_agent": data.get("userAgent")
         })
         
-        tribute_id = result.lastrowid
+        await self.session.commit()
+        result_id = await self.session.execute(text("SELECT LAST_INSERT_ID()"))
+        tribute_id = result_id.scalar()
+        if tribute_id is None:
+            raise Exception("Failed to retrieve last inserted id for tribute")
         
         # Insert images if provided
         if data.get("images"):
@@ -192,7 +199,7 @@ class Database:
                 )
         
         await self.session.commit()
-        return tribute_id
+        return int(tribute_id)
 
     async def update_tribute_status(self, tribute_id: int, status: str, admin_id: int, notes: Optional[str] = None):
         """Update tribute status"""
@@ -281,7 +288,11 @@ class Database:
             "user_agent": data.get("userAgent")
         })
         
-        accreditation_id = result.lastrowid
+        await self.session.commit()
+        result_id = await self.session.execute(text("SELECT LAST_INSERT_ID()"))
+        accreditation_id = result_id.scalar()
+        if accreditation_id is None:
+            raise Exception("Failed to retrieve last inserted id for accreditation")
         
         # Insert documents if provided
         if data.get("documents"):
@@ -303,7 +314,7 @@ class Database:
                 )
         
         await self.session.commit()
-        return accreditation_id
+        return int(accreditation_id)
 
     async def update_accreditation_status(self, accreditation_id: int, status: str, admin_id: int, notes: Optional[str] = None):
         """Update accreditation status"""
@@ -360,7 +371,11 @@ class Database:
             "uploaded_by": admin_id
         })
         await self.session.commit()
-        return result.lastrowid
+        result_id = await self.session.execute(text("SELECT LAST_INSERT_ID()"))
+        last_id = result_id.scalar()
+        if last_id is None:
+            raise Exception("Failed to retrieve last inserted id for gallery item")
+        return int(last_id)
 
     async def count_gallery_images(self) -> int:
         """Count only image items in the gallery."""

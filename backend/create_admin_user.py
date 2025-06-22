@@ -6,7 +6,7 @@ from datetime import datetime
 
 # --- CONFIGURE THESE ---
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "12345")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "Mz@2025!RootSQL")
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
 MYSQL_DB = os.getenv("MYSQL_DB", "memorialDB")
