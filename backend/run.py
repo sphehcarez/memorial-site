@@ -1,7 +1,10 @@
-import uvicorn
+import os
 
+# Only import uvicorn when running locally
 if __name__ == "__main__":
-    print("🇿🇲 Starting Memorial Website Backend Server. ...")
+    import uvicorn
+
+    print("🇿🇲 Starting Memorial Website Backend Server...")
     print("📍 Server will be available at: http://localhost:8000")
     print("📚 API Documentation: http://localhost:8000/docs")
     print("🔧 Admin Panel: http://localhost:3000/admin")
