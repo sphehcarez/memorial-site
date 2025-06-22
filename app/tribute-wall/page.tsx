@@ -56,7 +56,7 @@ export default function TributeWallPage() {
     },
     {
       id: 5,
-      name: "Chief Mukuni",
+      name: "Gugulethu Musonda",
       location: "Livingstone",
       message:
         "The National Day of Prayer he established brought our nation together in faith. Dr. Lungu understood that leadership requires both political wisdom and spiritual guidance.",
