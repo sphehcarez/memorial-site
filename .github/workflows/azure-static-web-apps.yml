@@ -25,15 +25,12 @@ jobs:
       - name: 🏗️ Build the Next.js project
         run: npm run build
 
-      - name: 🗂️ Export static site from Next.js
-        run: npx next export
-
       - name: 🚀 Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used to access the repo
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/"       # Location of your app source code
-          output_location: "out"  # Output directory from `next export`
-          api_location: ""        # Leave blank if not using Azure Functions
+          app_location: "/"         # Root of your Next.js app
+          output_location: "out"    # Next.js puts static export here
+          api_location: ""          # No API used
