@@ -1,43 +1,35 @@
-name: 🚀 Deploy Flask Backend to Azure App Service
+name: Deploy Backend to Azure Web App
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allow manual trigger from GitHub UI
-
-env:
-  AZURE_WEBAPP_NAME: memorial-backend           # Update to your actual app name
-  AZURE_RESOURCE_GROUP: memorial-site-interface # Update to your actual resource group name
-  PYTHON_VERSION: '3.11'
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
-    name: 🔧 Build and Deploy Flask App
+  deploy:
+    name: Deploy FastAPI Backend
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Checkout repository
+      - name: ⬇️ Checkout Code
         uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: '3.11'
 
-      - name: 📦 Install backend dependencies
+      - name: 📦 Install dependencies
+        working-directory: backend
         run: |
-          cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: 📁 Zip backend folder for deployment
-        run: zip -r backend.zip backend
 
       - name: 🚀 Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          slot-name: 'production'
+          app-name: memorial-backend
+          slot-name: Production
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: backend

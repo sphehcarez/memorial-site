@@ -223,12 +223,7 @@ export default function BurialDetailsPage() {
               <Card className="p-8 bg-white shadow-sm">
                 <h2 className="text-3xl font-serif font-bold text-green-800 mb-6">Quick Actions</h2>
                 <div className="space-y-4">
-                  <Link href="/accreditation">
-                    <Button className="w-full bg-green-700 hover:bg-green-800 justify-start">
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Register for Accreditation
-                    </Button>
-                  </Link>
+                  
                   <Link href="/livestream">
                     <Button variant="outline" className="w-full justify-start">
                       <Video className="w-4 h-4 mr-2" />
