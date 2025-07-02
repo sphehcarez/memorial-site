@@ -22,7 +22,7 @@ interface ChatMessage {
 
 export default function LivestreamPage() {
   const [isLive, setIsLive] = useState(false)
-  const [viewerCount, setViewerCount] = useState(0)
+  // Removed viewerCount state
   const [chatMessage, setChatMessage] = useState("")
   const [userName, setUserName] = useState("")
   const [isMuted, setIsMuted] = useState(false)
@@ -51,7 +51,7 @@ export default function LivestreamPage() {
         setTimeToStream({ days, hours, minutes, seconds })
       } else {
         setIsLive(true)
-        setViewerCount(Math.floor(Math.random() * 50000) + 10000)
+        // Removed setting of live demo viewer numbers
       }
     }, 1000)
 
@@ -121,48 +121,18 @@ export default function LivestreamPage() {
           <div className="lg:col-span-3">
             <Card className="overflow-hidden">
               <div className="aspect-video bg-black relative">
-                {!isLive ? (
-                  /* Countdown Screen */
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-green-900 flex flex-col items-center justify-center text-white">
-                    <div className="text-center mb-8">
-                      <h2 className="text-3xl font-serif font-bold mb-4">Memorial Service Starts In</h2>
-                      <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
-                        <div className="bg-white/20 p-4 rounded-lg">
-                          <div className="text-2xl font-bold">{timeToStream.days}</div>
-                          <div className="text-sm">Days</div>
-                        </div>
-                        <div className="bg-white/20 p-4 rounded-lg">
-                          <div className="text-2xl font-bold">{timeToStream.hours}</div>
-                          <div className="text-sm">Hours</div>
-                        </div>
-                        <div className="bg-white/20 p-4 rounded-lg">
-                          <div className="text-2xl font-bold">{timeToStream.minutes}</div>
-                          <div className="text-sm">Minutes</div>
-                        </div>
-                        <div className="bg-white/20 p-4 rounded-lg">
-                          <div className="text-2xl font-bold">{timeToStream.seconds}</div>
-                          <div className="text-sm">Seconds</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xl mb-2">Saturday, June 14, 2025</p>
-                      <p className="text-lg">10:00 AM CAT</p>
-                      <p className="text-sm text-green-200 mt-2">National Heroes Stadium, Lusaka</p>
-                    </div>
-                  </div>
-                ) : (
-                  /* Live Stream */
-                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="w-20 h-20 bg-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Play className="w-10 h-10 ml-1" />
-                      </div>
-                      <p className="text-xl mb-2">Memorial Service Live</p>
-                      <Badge className="bg-red-600">LIVE</Badge>
-                    </div>
-                  </div>
-                )}
+                {/* Always show YouTube livestream embed */}
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/s1fltIgWBNg?si=Y1H3WIybwz3rx47g"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                ></iframe>
 
                 {/* Video Controls */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
@@ -184,7 +154,7 @@ export default function LivestreamPage() {
                           <Badge className="bg-red-600">LIVE</Badge>
                           <div className="flex items-center gap-1 text-sm">
                             <Users className="w-4 h-4" />
-                            <span>{viewerCount.toLocaleString()}</span>
+                            {/* Removed live demo viewer numbers */}
                           </div>
                         </div>
                       )}
@@ -212,10 +182,6 @@ export default function LivestreamPage() {
                   </div>
                   {isLive && (
                     <div className="text-right">
-                      <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
-                        <Users className="w-4 h-4" />
-                        <span>{viewerCount.toLocaleString()} watching</span>
-                      </div>
                       <Badge className="bg-red-600">LIVE</Badge>
                     </div>
                   )}
@@ -224,18 +190,15 @@ export default function LivestreamPage() {
                 <div className="grid md:grid-cols-3 gap-4 text-sm">
                   <div>
                     <h4 className="font-bold text-gray-900 mb-1">Date & Time</h4>
-                    <p className="text-gray-600">Saturday, June 14, 2025</p>
-                    <p className="text-gray-600">10:00 AM - 1:00 PM CAT</p>
+                    <p className="text-gray-600">Wednesday, 25th June 2025 at 11:00</p>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Venue</h4>
-                    <p className="text-gray-600">National Heroes Stadium</p>
-                    <p className="text-gray-600">Independence Avenue, Lusaka</p>
+                    <h4 className="font-bold text-gray-900 mb-1">Main Celebrant</h4>
+                    <p className="text-gray-600">Archbishop Alick Banda of Lusaka-Zambia</p>
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Also Available On</h4>
-                    <p className="text-gray-600">ZNBC TV</p>
-                    <p className="text-gray-600">Radio Phoenix</p>
+                    <h4 className="font-bold text-gray-900 mb-1">Address</h4>
+                    <p className="text-gray-600">186 Nugget Street, Hillbrow, Johannesburg, 2001</p>
                   </div>
                 </div>
               </div>

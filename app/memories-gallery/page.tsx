@@ -50,60 +50,26 @@ export default function MemoriesGalleryPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const mediaItems: MediaItem[] = [
-    {
-      id: 1,
-      title: "Presidential Inauguration 2015",
-      description: "Dr. Lungu being sworn in as the sixth President of Zambia at National Heroes Stadium",
-      category: "presidential",
-      type: "image",
-      url: "/placeholder.svg?height=600&width=800",
-      year: "2015",
-      tags: ["inauguration", "ceremony", "historic"],
-      photographer: "State House Photographer",
-      location: "National Heroes Stadium, Lusaka",
-    },
-    {
-      id: 2,
-      title: "Meeting with Pope Francis",
-      description: "Historic audience with Pope Francis at the Vatican",
-      category: "international",
-      type: "image",
-      url: "/placeholder.svg?height=600&width=800",
-      year: "2016",
-      tags: ["vatican", "pope", "diplomacy"],
-      photographer: "Vatican Media",
-      location: "Vatican City",
-    },
+    // Removed placeholder images as requested
     {
       id: 3,
       title: "Campaign Rally 2016",
       description: "Dr. Lungu addressing supporters during the 2016 election campaign",
       category: "political",
       type: "video",
-      url: "/placeholder.svg?height=600&width=800",
-      thumbnail: "/placeholder.svg?height=400&width=600",
+      url: "/memories-gallery/Campaign%20Rally%202016.mp4",
       year: "2016",
       tags: ["campaign", "rally", "supporters"],
       location: "Heroes Stadium, Lusaka",
     },
-    {
-      id: 4,
-      title: "University of Zambia Graduation",
-      description: "Young Edgar Lungu at his law degree graduation ceremony",
-      category: "early-life",
-      type: "image",
-      url: "/placeholder.svg?height=600&width=800",
-      year: "1981",
-      tags: ["education", "graduation", "university"],
-      location: "University of Zambia",
-    },
+    // Removed University of Zambia Graduation placeholder entry
     {
       id: 5,
       title: "Appointing First Female VP",
       description: "Historic moment appointing Inonge Wina as Zambia's first female Vice-President",
       category: "presidential",
       type: "image",
-      url: "/placeholder.svg?height=600&width=800",
+      url: "/memories-gallery/first%20lady.jpg",
       year: "2015",
       tags: ["historic", "women", "appointment"],
       photographer: "State House Photographer",
@@ -114,48 +80,35 @@ export default function MemoriesGalleryPage() {
       title: "National Day of Prayer",
       description: "Leading the first National Day of Prayer, Fasting, Repentance and Reconciliation",
       category: "presidential",
-      type: "video",
-      url: "/placeholder.svg?height=600&width=800",
-      thumbnail: "/placeholder.svg?height=400&width=600",
+      type: "image",
+      url: "/memories-gallery/Zambia%20_%20President_Praying.jpg",
       year: "2015",
       tags: ["prayer", "faith", "national"],
       location: "Cathedral of the Holy Cross",
     },
-  ]
+    {
+      id: 7,
+      title: "COVID-19 National Address",
+      description: "In the midst of the global pandemic, President Edgar Chagwa Lungu stood as a symbol of calm and responsibility.",
+      category: "presidential",
+      type: "image",
+      url: "/memories-gallery/National%20Address.jpeg",
+      year: "2020",
+      tags: ["covid19", "leadership", "health", "crisis-response"],
+      location: "State House, Lusaka",
+    },
+  ];
 
-  const categories = [
-    { id: "all", name: "All", icon: ImageIcon, count: mediaItems.length },
-    {
-      id: "early-life",
-      name: "Early Life",
-      icon: Calendar,
-      count: mediaItems.filter((item) => item.category === "early-life").length,
-    },
-    {
-      id: "political",
-      name: "Political Career",
-      icon: Users,
-      count: mediaItems.filter((item) => item.category === "political").length,
-    },
-    {
-      id: "presidential",
-      name: "Presidential",
-      icon: Award,
-      count: mediaItems.filter((item) => item.category === "presidential").length,
-    },
-    {
-      id: "international",
-      name: "International",
-      icon: Users,
-      count: mediaItems.filter((item) => item.category === "international").length,
-    },
-    {
-      id: "family",
-      name: "Family",
-      icon: Heart,
-      count: mediaItems.filter((item) => item.category === "family").length,
-    },
-  ]
+  // Only include categories that have at least one item
+  const availableCategories = [
+    { id: "all", name: "All", icon: ImageIcon },
+    { id: "political", name: "Political Career", icon: Users },
+    { id: "presidential", name: "Presidential", icon: Award },
+  ];
+  const categories = availableCategories.map((cat) => ({
+    ...cat,
+    count: cat.id === "all" ? mediaItems.length : mediaItems.filter((item) => item.category === cat.id).length,
+  })).filter((cat) => cat.count > 0 || cat.id === "all");
 
   const filteredItems = mediaItems
     .filter((item) => selectedCategory === "all" || item.category === selectedCategory)
@@ -311,24 +264,7 @@ export default function MemoriesGalleryPage() {
                 </button>
               </div>
 
-              {/* Download PDF */}
-              <Button
-                onClick={downloadPDF}
-                disabled={isLoading}
-                className="bg-green-600 hover:bg-green-700 px-6 py-2 h-12"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </>
-                )}
-              </Button>
+            {/* Download PDF removed as requested */}
             </div>
           </div>
         </div>
@@ -365,18 +301,23 @@ export default function MemoriesGalleryPage() {
                     onClick={() => openLightbox(item)}
                   >
                     <div className="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                      <Image
-                        src={item.type === "video" ? item.thumbnail || item.url : item.url}
-                        alt={item.title}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      {item.type === "video" && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                          <div className="w-16 h-16 bg-white/95 rounded-full flex items-center justify-center shadow-lg">
-                            <Play className="w-8 h-8 text-green-700 ml-1" />
-                          </div>
+                      {item.type === "video" ? (
+                        <div className="relative w-full h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); openLightbox(item); }}>
+                          <video
+                            src={item.url}
+                            poster={item.thumbnail}
+                            className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                            controls
+                            playsInline
+                          />
                         </div>
+                      ) : (
+                        <Image
+                          src={item.url}
+                          alt={item.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
                       )}
                       <div className="absolute top-3 right-3">
                         <Badge className="bg-black/70 text-white border-0">{item.year}</Badge>
@@ -424,16 +365,23 @@ export default function MemoriesGalleryPage() {
                   >
                     <div className="flex">
                       <div className="w-48 h-32 bg-gray-100 relative overflow-hidden flex-shrink-0">
-                        <Image
-                          src={item.type === "video" ? item.thumbnail || item.url : item.url}
-                          alt={item.title}
-                          fill
-                          className="object-cover"
-                        />
-                        {item.type === "video" && (
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <Play className="w-8 h-8 text-white" />
+                        {item.type === "video" ? (
+                          <div className="relative w-full h-full cursor-pointer" onClick={(e) => { e.stopPropagation(); openLightbox(item); }}>
+                            <video
+                              src={item.url}
+                              poster={item.thumbnail}
+                              className="object-cover w-full h-full"
+                              controls
+                              playsInline
+                            />
                           </div>
+                        ) : (
+                          <Image
+                            src={item.url}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                          />
                         )}
                       </div>
                       <div className="flex-1 p-6">
@@ -502,18 +450,21 @@ export default function MemoriesGalleryPage() {
             </button>
 
             <div className="aspect-video relative bg-black">
-              <Image
-                src={selectedItem.url || "/placeholder.svg"}
-                alt={selectedItem.title}
-                fill
-                className="object-contain"
-              />
-              {selectedItem.type === "video" && (
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center">
-                    <Play className="w-10 h-10 text-green-700 ml-1" />
-                  </div>
-                </div>
+              {selectedItem.type === "video" ? (
+                <video
+                  src={selectedItem.url}
+                  poster={selectedItem.thumbnail}
+                  controls
+                  autoPlay
+                  className="object-contain w-full h-full"
+                />
+              ) : (
+                <Image
+                  src={selectedItem.url || "/placeholder.svg"}
+                  alt={selectedItem.title}
+                  fill
+                  className="object-contain"
+                />
               )}
             </div>
 

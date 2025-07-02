@@ -13,44 +13,91 @@ interface CondolenceMessage {
 
 export default function CondolencesTicker() {
   const [messages, setMessages] = useState<CondolenceMessage[]>([])
-  const [currentIndex, setCurrentIndex] = useState(0)
-
   // Sample messages - in real app, this would come from API
   const sampleMessages: CondolenceMessage[] = [
     {
       id: 1,
-      name: "Mary Banda",
-      message: "A true leader who served Zambia with dedication. Rest in peace, Your Excellency.",
+      name: "Esther Lungu",
+      message: "You were a loving husband and a pillar of strength for our family and nation. Rest in peace, my love.",
       location: "Lusaka",
       timestamp: "2025-06-07T10:30:00Z",
     },
     {
       id: 2,
-      name: "John Mwanza",
-      message: "Dr. Lungu's legacy will forever inspire future generations of Zambians.",
-      location: "Ndola",
+      name: "Inonge Wina",
+      message: "Your leadership and support for women in Zambia will always be remembered. Farewell, my friend.",
+      location: "Lusaka",
       timestamp: "2025-06-07T11:15:00Z",
     },
     {
       id: 3,
-      name: "Sarah Phiri",
-      message: "Thank you for your service to our nation. Your memory lives on in our hearts.",
-      location: "Kitwe",
+      name: "Ngosa Simbyakula",
+      message: "Thank you for your guidance and wisdom throughout our years of service together.",
+      location: "Lusaka",
       timestamp: "2025-06-07T12:00:00Z",
     },
     {
       id: 4,
-      name: "David Tembo",
-      message: "A statesman who believed in democracy and peaceful transitions. Forever remembered.",
-      location: "Livingstone",
+      name: "Kampamba Mulenga",
+      message: "Your encouragement and mentorship shaped my career. You will be missed, Sir.",
+      location: "Kitwe",
       timestamp: "2025-06-07T13:45:00Z",
     },
     {
       id: 5,
-      name: "Grace Mulenga",
-      message: "His Excellency's commitment to women's empowerment will never be forgotten.",
-      location: "Kabwe",
+      name: "Chitalu Chilufya",
+      message: "Your vision for a healthy Zambia inspired us all. Rest well, President.",
+      location: "Mansa",
       timestamp: "2025-06-07T14:20:00Z",
+    },
+    {
+      id: 6,
+      name: "Amos Chanda",
+      message: "Your trust and confidence in me was an honor. Thank you for your service.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T15:00:00Z",
+    },
+    {
+      id: 7,
+      name: "Kaizer Zulu",
+      message: "You were a true friend and leader. Your legacy will live on.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T15:30:00Z",
+    },
+    {
+      id: 8,
+      name: "Margaret Mwanakatwe",
+      message: "Your economic vision and support for businesswomen changed many lives. Rest in peace.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T16:00:00Z",
+    },
+    {
+      id: 9,
+      name: "Freedom Sikazwe",
+      message: "Your humility and humor brightened every room. Thank you for your friendship.",
+      location: "Mpulungu",
+      timestamp: "2025-06-07T16:30:00Z",
+    },
+    {
+      id: 10,
+      name: "Stella Libongani",
+      message: "Your dedication to peace and security inspired us all. Rest well, Sir.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T17:00:00Z",
+    },
+    {
+      id: 11,
+      name: "Kennedy Kamba",
+      message: "Your leadership and vision for the party will never be forgotten.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T17:30:00Z",
+    },
+    {
+      id: 12,
+      name: "Mumbi Phiri",
+      message: "Thank you for your unwavering support and guidance. Rest in peace, President.",
+      location: "Lusaka",
+      timestamp: "2025-06-07T18:00:00Z",
     },
   ]
 
@@ -58,19 +105,17 @@ export default function CondolencesTicker() {
     setMessages(sampleMessages)
   }, [])
 
-  useEffect(() => {
-    if (messages.length === 0) return
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % messages.length)
-    }, 8000) // Change message every 8 seconds
-
-    return () => clearInterval(interval)
-  }, [messages.length])
-
   if (messages.length === 0) return null
 
-  const currentMessage = messages[currentIndex]
+  // Concatenate all messages into a single scrolling line
+  const scrollingContent = messages.map((msg, idx) => (
+    <span key={msg.id} className="inline-block mr-12">
+      <span className="font-medium text-white">{msg.name}</span>
+      {msg.location && <span className="text-gray-300 ml-2">({msg.location})</span>}
+      <span className="text-gray-100 ml-4">{msg.message}</span>
+      <span className="text-gray-400 ml-8">•</span>
+    </span>
+  ))
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-black text-white z-40">
@@ -85,13 +130,10 @@ export default function CondolencesTicker() {
             <div
               className="animate-scroll whitespace-nowrap text-sm"
               style={{
-                animation: "scroll 30s linear infinite",
+                animation: "scroll 60s linear infinite",
               }}
             >
-              <span className="font-medium text-white">{currentMessage.name}</span>
-              {currentMessage.location && <span className="text-gray-300 ml-2">({currentMessage.location})</span>}
-              <span className="text-gray-100 ml-4">{currentMessage.message}</span>
-              <span className="text-gray-400 ml-8">•</span>
+              {scrollingContent}
             </div>
           </div>
         </div>
@@ -106,7 +148,7 @@ export default function CondolencesTicker() {
           }
         }
         .animate-scroll {
-          animation: scroll 30s linear infinite;
+          animation: scroll 60s linear infinite;
         }
       `}</style>
     </div>
