@@ -127,22 +127,7 @@ export default function AdminLoginPage() {
           </Button>
         </form>
 
-        <div className="mt-8 text-center">
-          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Demo Credentials</h4>
-            <p className="text-sm text-blue-700">Username: admin</p>
-            <p className="text-sm text-blue-700">Password: memorial2025</p>
-          </div>
-
-          <div className="mt-4 bg-amber-50 border border-amber-200 p-3 rounded-lg">
-            <p className="text-xs text-amber-700">
-              <strong>Note:</strong> Make sure the Python backend is running on port 8000
-            </p>
-            <p className="text-xs text-amber-600 mt-1">
-              Run: <code className="bg-amber-100 px-1 rounded">cd backend && python run.py</code>
-            </p>
-          </div>
-        </div>
+        {/* Removed backend running note and command as requested */}
       </Card>
     </div>
   )

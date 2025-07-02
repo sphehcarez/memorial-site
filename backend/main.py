@@ -84,39 +84,6 @@ async def health_check():
 async def admin_login(credentials: AdminLoginRequest, db: Database = Depends(get_db)):
     """Admin authentication endpoint"""
     try:
-        # Demo credentials for testing
-        if credentials.username == "admin" and credentials.password == "memorial2025":
-            # Create demo admin user
-            demo_admin = {
-                "id": 1,
-                "username": "admin",
-                "full_name": "System Administrator",
-                "role": "super_admin",
-                "email": "admin@memorial.gov.zm"
-            }
-            
-            # Create JWT token
-            token_data = {
-                "id": demo_admin["id"],
-                "username": demo_admin["username"],
-                "role": demo_admin["role"],
-                "fullName": demo_admin["full_name"],
-                "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS)
-            }
-            token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
-            
-            return AuthResponse(
-                success=True,
-                token=token,
-                user=AdminUserResponse(
-                    id=demo_admin["id"],
-                    username=demo_admin["username"],
-                    fullName=demo_admin["full_name"],
-                    role=demo_admin["role"],
-                    email=demo_admin["email"]
-                )
-            )
-        
         # Get admin user from database
         admin = await db.get_admin_by_username(credentials.username)
         if not admin:
