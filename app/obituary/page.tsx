@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Download, Calendar, GraduationCap, Briefcase, Award, Heart, FileText, Share2 } from "lucide-react"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
+import ScrollToTopOnBottom from "@/components/ScrollToTopOnBottom"
 
 export default function ObituaryPage() {
   const milestones = [
@@ -130,14 +131,7 @@ export default function ObituaryPage() {
             <h1 className="text-5xl md:text-6xl font-serif font-bold mb-4">Official Obituary</h1>
             <p className="text-xl md:text-2xl text-green-100 mb-8">The Life and Legacy of Dr. Edgar Chagwa Lungu</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={downloadObituaryPDF}
-                size="lg"
-                className="bg-white text-green-800 hover:bg-green-50 px-8 py-3 text-lg font-semibold"
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Download Official PDF
-              </Button>
+              {/* Download Official PDF button removed */}
               <Button
                 size="lg"
                 className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
@@ -329,6 +323,7 @@ export default function ObituaryPage() {
       </div>
 
       <CondolencesTicker />
+      <ScrollToTopOnBottom />
     </div>
   )
 }

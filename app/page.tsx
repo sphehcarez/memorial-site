@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Share, Calendar, Flag, Heart, Users } from "lucide-react"
 import Image from "next/image"
 import Navigation from "@/components/navigation"
+import ScrollToTopOnBottom from "@/components/ScrollToTopOnBottom"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Link from "next/link"
 
@@ -178,11 +179,7 @@ export default function HomePage() {
       </div>
 
       {/* Share Button */}
-      <div className="fixed bottom-24 right-6 z-40">
-        <Button className="bg-green-700 hover:bg-green-800 text-white shadow-2xl rounded-full w-12 h-12 p-0">
-          <Share className="w-5 h-5" />
-        </Button>
-      </div>
+      <ScrollToTopOnBottom />
 
       {/* Condolences Ticker */}
       <CondolencesTicker />

@@ -178,7 +178,7 @@ export default function LivestreamPage() {
                     <h2 className="text-2xl font-serif font-bold text-green-800">
                       Memorial Service for Dr. Edgar Chagwa Lungu
                     </h2>
-                    <p className="text-gray-600">National Heroes Stadium, Lusaka</p>
+                    {/* Removed National Heroes Stadium, Lusaka */}
                   </div>
                   {isLive && (
                     <div className="text-right">

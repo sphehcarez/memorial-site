@@ -9,7 +9,12 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 export const metadata: Metadata = {
   title: "Dr. Edgar Chagwa Lungu - Memorial Website",
   description: "In loving memory of His Excellency Dr. Edgar Chagwa Lungu, Sixth President of the Republic of Zambia",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: "/memories-gallery/icon.jpg",
+    shortcut: "/memories-gallery/icon.jpg",
+    apple: "/memories-gallery/icon.jpg"
+  }
 }
 
 export default function RootLayout({

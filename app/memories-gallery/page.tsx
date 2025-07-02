@@ -60,7 +60,7 @@ export default function MemoriesGalleryPage() {
       url: "/memories-gallery/Campaign%20Rally%202016.mp4",
       year: "2016",
       tags: ["campaign", "rally", "supporters"],
-      location: "Heroes Stadium, Lusaka",
+      location: "Lusaka",
     },
     // Removed University of Zambia Graduation placeholder entry
     {
