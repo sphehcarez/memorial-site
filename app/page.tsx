@@ -33,7 +33,7 @@ export default function HomePage() {
                 <div className="relative">
                   <div className="w-40 h-48 bg-white p-2 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300">
                     <Image
-                      src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-06-21%20at%2011.28.27-Uer1JOyVewx4NiXrjXmYyIVsTUymx6.jpeg"
+                      src="/memories-gallery/profile%20picture.jpeg"
                       alt="His Excellency Dr. Edgar Chagwa Lungu"
                       width={150}
                       height={180}
