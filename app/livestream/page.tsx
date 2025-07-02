@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
-import { Play, Users, MessageCircle, Send, Volume2, VolumeX, Maximize, Settings } from "lucide-react"
+import { MessageCircle, Send } from "lucide-react"
 import CondolencesTicker from "@/components/condolences-ticker"
 import Navigation from "@/components/navigation"
 
@@ -21,11 +21,11 @@ interface ChatMessage {
 }
 
 export default function LivestreamPage() {
-  const [isLive, setIsLive] = useState(false)
+  // const [isLive, setIsLive] = useState(false)
   // Removed viewerCount state
   const [chatMessage, setChatMessage] = useState("")
   const [userName, setUserName] = useState("")
-  const [isMuted, setIsMuted] = useState(false)
+  // const [isMuted, setIsMuted] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [timeToStream, setTimeToStream] = useState({
     days: 0,
@@ -35,28 +35,28 @@ export default function LivestreamPage() {
   })
 
   // Stream date: June 14, 2025, 10:00 AM
-  const streamDate = new Date("2025-06-14T10:00:00Z")
+  // const streamDate = new Date("2025-06-14T10:00:00Z")
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date()
-      const difference = streamDate.getTime() - now.getTime()
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
-
-        setTimeToStream({ days, hours, minutes, seconds })
-      } else {
-        setIsLive(true)
-        // Removed setting of live demo viewer numbers
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const now = new Date()
+  //     const difference = streamDate.getTime() - now.getTime()
+  //
+  //     if (difference > 0) {
+  //       const days = Math.floor(difference / (1000 * 60 * 60 * 24))
+  //       const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  //       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+  //       const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+  //
+  //       setTimeToStream({ days, hours, minutes, seconds })
+  //     } else {
+  //       setIsLive(true)
+  //       // Removed setting of live demo viewer numbers
+  //     }
+  //   }, 1000)
+  //
+  //   return () => clearInterval(interval)
+  // }, [])
 
   // Sample chat messages
   useEffect(() => {
@@ -133,42 +133,7 @@ export default function LivestreamPage() {
                   allowFullScreen
                   className="absolute inset-0 w-full h-full"
                 ></iframe>
-
-                {/* Video Controls */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                  <div className="flex items-center justify-between text-white">
-                    <div className="flex items-center gap-4">
-                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/20">
-                        <Play className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:bg-white/20"
-                        onClick={() => setIsMuted(!isMuted)}
-                      >
-                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                      </Button>
-                      {isLive && (
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-red-600">LIVE</Badge>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Users className="w-4 h-4" />
-                            {/* Removed live demo viewer numbers */}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/20">
-                        <Settings className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-white hover:bg-white/20">
-                        <Maximize className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                {/* Video controls and live tags removed */}
               </div>
 
               {/* Stream Info */}
@@ -180,11 +145,7 @@ export default function LivestreamPage() {
                     </h2>
                     {/* Removed National Heroes Stadium, Lusaka */}
                   </div>
-                  {isLive && (
-                    <div className="text-right">
-                      <Badge className="bg-red-600">LIVE</Badge>
-                    </div>
-                  )}
+                  {/* LIVE tag removed */}
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4 text-sm">
@@ -212,11 +173,7 @@ export default function LivestreamPage() {
                 <div className="flex items-center gap-2 mb-4">
                   <MessageCircle className="w-5 h-5 text-green-700" />
                   <h3 className="font-bold text-green-800">Live Chat</h3>
-                  {isLive && (
-                    <Badge variant="outline" className="text-xs">
-                      Moderated
-                    </Badge>
-                  )}
+                  {/* Moderated badge removed */}
                 </div>
 
                 {/* User Name Input */}

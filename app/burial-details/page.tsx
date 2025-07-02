@@ -197,14 +197,7 @@ export default function BurialDetailsPage() {
                     <div>
                       <h3 className="font-bold text-gray-900">Livestream</h3>
                       <p className="text-gray-600">Available on Grindstone Television</p>
-                      <a
-                        href="https://www.youtube.com/@grindstonetelevisionzambia163"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-green-700 text-sm hover:underline"
-                      >
-                        Watch on YouTube →
-                      </a>
+                      {/* Watch on YouTube link removed */}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
