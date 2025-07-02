@@ -32,8 +32,8 @@ export default function BurialDetailsPage() {
     seconds: 0,
   })
 
-  // Service date: June 14, 2025, 10:00 AM
-  const serviceDate = new Date("2025-06-14T10:00:00Z")
+  // Service date: Wednesday, 25th June 2025, 11:00 AM CAT
+  const serviceDate = new Date("2025-06-25T09:00:00Z") // 11:00 CAT = 09:00 UTC
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,44 +55,43 @@ export default function BurialDetailsPage() {
 
   const schedule = [
     {
-      time: "8:00 AM",
+      time: "9:00 AM",
       event: "Venue preparation and setup",
-      location: "FNB Stadium",
+      location: "186 Nugget Street, Hillbrow, Johannesburg, 2001",
       status: "preparation",
     },
-    { time: "9:00 AM", event: "VIP and family arrival", location: "Private entrance", status: "vip" },
-    { time: "9:30 AM", event: "General public seating begins", location: "Main entrances", status: "public" },
-    { time: "10:00 AM", event: "Memorial service commences", location: "Main arena", status: "ceremony" },
-    { time: "10:15 AM", event: "Opening prayers and national anthem", location: "Main arena", status: "ceremony" },
-    { time: "10:45 AM", event: "Tributes and eulogies", location: "Main arena", status: "ceremony" },
-    { time: "11:30 AM", event: "Presidential address", location: "Main arena", status: "ceremony" },
-    { time: "12:00 PM", event: "Cultural performances", location: "Main arena", status: "ceremony" },
-    { time: "12:30 PM", event: "Final prayers and benediction", location: "Main arena", status: "ceremony" },
-    { time: "1:00 PM", event: "Service conclusion", location: "Main arena", status: "ceremony" },
-    { time: "2:00 PM", event: "Private burial ceremony", location: "Westpark Cemetery", status: "private" },
+    { time: "10:00 AM", event: "VIP and family arrival", location: "VIP Entrance", status: "vip" },
+    { time: "10:30 AM", event: "General public seating begins", location: "Main Hall Entrances", status: "public" },
+    { time: "11:00 AM", event: "Memorial service commences", location: "Main Hall", status: "ceremony" },
+    { time: "11:10 AM", event: "Opening prayers and national anthem", location: "Main Hall", status: "ceremony" },
+    { time: "11:30 AM", event: "Tributes and eulogies", location: "Main Hall", status: "ceremony" },
+    { time: "12:00 PM", event: "Main celebrant's address", location: "Main Hall", status: "ceremony" },
+    { time: "12:30 PM", event: "Final prayers and benediction", location: "Main Hall", status: "ceremony" },
+    { time: "1:00 PM", event: "Service conclusion", location: "Main Hall", status: "ceremony" },
+    { time: "2:00 PM", event: "Private burial ceremony", location: "Private Burial Site", status: "private" },
   ]
 
   const speakers = [
-    { name: "Most Rev. Alick Banda", title: "Archbishop of Lusaka", time: "10:15 AM" },
-    { name: "Hon. Given Lucinda", title: "Acting President Patriotic Front", time: "11:00 AM" },
-    { name: "Hon. Tasila Lungu", title: "Family Representative", time: "11:15 AM" },
+    { name: "Archbishop Alick Banda", title: "Main Celebrant, Lusaka-Zambia", time: "11:00 AM" },
+    { name: "Hon. Tasila Lungu", title: "Family Representative", time: "11:30 AM" },
+    { name: "Other Dignitaries & Close Associates", title: "Tributes & Eulogies", time: "11:40 AM" },
   ]
 
   const venues = [
     {
-      name: "FNB Stadium",
-      type: "Main Venue",
-      capacity: "94,000",
-      address: "Soccer City, Johannesburg, South Africa",
-      facilities: ["Wheelchair Access", "Medical Station", "VIP Lounge", "Media Center"],
+      name: "Main Hall",
+      type: "Service Venue",
+      capacity: "2,000+",
+      address: "186 Nugget Street, Hillbrow, Johannesburg, 2001",
+      facilities: ["Wheelchair Access", "Medical Station", "VIP Lounge", "Media Area"],
       parking: "Limited - Shuttle Service Recommended",
     },
     {
-      name: "Westpark Cemetery",
+      name: "Private Burial Site",
       type: "Burial Site",
       capacity: "Private Ceremony",
-      address: "Westpark, Johannesburg, South Africa",
-      facilities: ["Family Area", "Security Perimeter", "Media Viewing Area"],
+      address: "(Details provided to family only)",
+      facilities: ["Family Area", "Security Perimeter"],
       parking: "Restricted Access",
     },
   ]
@@ -100,20 +99,20 @@ export default function BurialDetailsPage() {
   const transportOptions = [
     {
       type: "Free Shuttle Service",
-      routes: ["City Center → Stadium", "University → Stadium", "Airport → Stadium"],
-      schedule: "Every 15 minutes from 8:00 AM",
+      routes: ["Park Station → 186 Nugget Street", "OR Tambo Airport → 186 Nugget Street"],
+      schedule: "Every 15 minutes from 8:30 AM",
       cost: "Free",
     },
     {
       type: "Public Transport",
-      routes: ["Bus Routes 1, 5, 12", "Taxi Services Available"],
+      routes: ["Rea Vaya Bus", "Local Taxi Services"],
       schedule: "Regular city schedule",
       cost: "Standard fares apply",
     },
     {
       type: "Private Vehicle",
-      routes: ["Independence Avenue", "Great East Road", "Kafue Road"],
-      schedule: "Traffic restrictions from 7:00 AM",
+      routes: ["Nugget Street", "Quartz Street", "Claim Street"],
+      schedule: "Traffic restrictions from 8:00 AM",
       cost: "Parking fees may apply",
     },
   ]
@@ -176,22 +175,21 @@ export default function BurialDetailsPage() {
                     <Calendar className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Date</h3>
-                      <p className="text-gray-600">Saturday, June 14, 2025</p>
+                      <p className="text-gray-600">Wednesday, 25th June 2025</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Time</h3>
-                      <p className="text-gray-600">10:00 AM - 1:00 PM (CAT)</p>
+                      <p className="text-gray-600">11:00 AM (CAT)</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <MapPin className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Venue</h3>
-                      <p className="text-gray-600">FNB Stadium</p>
-                      <p className="text-gray-500 text-sm">Soccer City, Johannesburg, South Africa</p>
+                      <p className="text-gray-600">186 Nugget Street, Hillbrow, Johannesburg, 2001</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -213,8 +211,8 @@ export default function BurialDetailsPage() {
                     <Users className="w-6 h-6 text-green-700" />
                     <div>
                       <h3 className="font-bold text-gray-900">Expected Attendance</h3>
-                      <p className="text-gray-600">50,000+ attendees</p>
-                      <p className="text-gray-500 text-sm">Including international dignitaries</p>
+                      <p className="text-gray-600">2,000+ attendees</p>
+                      <p className="text-gray-500 text-sm">Including international dignitaries and close associates</p>
                     </div>
                   </div>
                 </div>
