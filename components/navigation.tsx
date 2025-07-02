@@ -17,7 +17,6 @@ export default function Navigation() {
     { href: "/tribute-wall", label: "Tribute Wall" },
     { href: "/memories-gallery", label: "Memories Gallery" },
     { href: "/livestream", label: "Livestream" },
-    { href: "/accreditation", label: "Accreditation" },
     { href: "/condolences", label: "Condolences" },
   ]
 
